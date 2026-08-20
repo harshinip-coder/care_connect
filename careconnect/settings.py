@@ -112,12 +112,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'careconnect.wsgi.application'
 
 default_db = {
-    'ENGINE': 'django.db.backends.postgresql',
-    'NAME': 'careconnect_db',
-    'USER': 'postgres',
-    'PASSWORD': 'Harshini@2008',
-    'HOST': 'localhost',
-    'PORT': '5432',
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3',
 }
 
 if dj_database_url and os.environ.get('DATABASE_URL'):
