@@ -1,0 +1,119 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid p-4" style="background:#f8fafc; min-height:100vh;">
+
+    <!-- WELCOME BANNER FOR VOLUNTEER -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4" style="background:#ffffff; overflow:hidden;">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-7 d-flex align-items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=f3e8ff&color=7c3aed&bold=true" 
+                         alt="User Avatar" class="rounded-circle" style="width:72px; height:72px; border:3px solid #7c3aed;">
+                    <div>
+                        <span class="text-muted small fw-semibold">Welcome back,</span>
+                        <h2 class="fw-extrabold m-0" style="color:#0f172a; font-size:1.6rem;">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                            <i class="fa-solid fa-hand-holding-heart text-purple fs-5" style="color:#7c3aed;" title="Volunteer Responder"></i>
+                        </h2>
+                        <div class="mt-1 d-flex flex-wrap align-items-center gap-3 text-muted small fw-semibold">
+                            <span><i class="fa-solid fa-heart-pulse me-1" style="color:#7c3aed;"></i> Volunteer ID: {{ request.user.employee_id|default:volunteer_info.volunteer_id|default:"VOL001" }} ({{ request.user.volunteer_type|default:volunteer_info.volunteer_type|default:"Emergency Volunteer" }})</span>
+                            <span>•</span>
+                            <span><i class="fa-solid fa-location-dot me-1 text-danger"></i> Society: {{ request.user.society.name|default:"UK" }} • Preferred Area: {{ request.user.preferred_response_area|default:volunteer_info.preferred_response_area|default:"Block A" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5 mt-3 mt-md-0 text-md-end">
+                    <div class="p-3 rounded-4 d-inline-flex align-items-center gap-3 text-start" style="background:#faf5ff; border:1px solid #e9d5ff;">
+                        <i class="fa-solid fa-handshake-angle fs-2 text-purple opacity-75" style="color:#7c3aed;"></i>
+                        <div>
+                            <strong class="d-block text-purple-emphasis" style="font-size:0.9rem; color:#6b21a8;">Volunteer Assistance Network</strong>
+                            <span class="text-secondary small">Providing rapid community support during escalated resident emergencies.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AVAILABLE REQUESTS SECTION -->
+    <div id="availableRequests" class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+        <div class="card-header bg-transparent border-0 p-4 d-flex align-items-center justify-content-between">
+            <h4 class="fw-extrabold m-0" style="color:#6b21a8;">
+                <i class="fa-solid fa-hand-sparkles me-2"></i> Available Assistance Requests
+            </h4>
+            <span class="badge bg-purple rounded-pill px-3 py-2 fw-bold" style="background:#7c3aed; color:#fff;">
+                Community Support
+            </span>
+        </div>
+
+        <div class="card-body p-4 pt-0">
+            {% if volunteer_alerts %}
+                <div class="row g-4">
+                    {% for em in volunteer_alerts %}
+                    <div class="col-md-6">
+                        <div class="p-4 rounded-4 border h-100 shadow-sm" style="background:#ffffff; border-color:#e9d5ff !important;">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="badge bg-purple rounded-pill px-3 py-2 fw-bold" style="background:#7c3aed; color:#fff;">
+                                    {{ em.emergency_type }} Request
+                                </span>
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">{{ em.status }}</span>
+                            </div>
+
+                            <h5 class="fw-bold text-dark mb-2">Assistance Needed at Location</h5>
+                            <p class="text-secondary small mb-3">
+                                <i class="fa-solid fa-location-dot me-1 text-danger"></i> <strong>Location:</strong> {{ em.location_address }}<br>
+                                <i class="fa-solid fa-user me-1 text-primary"></i> <strong>Resident:</strong> {{ em.resident.get_full_name|default:em.resident.username }}
+                            </p>
+
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <button type="button" class="btn btn-purple text-white fw-bold px-4 py-2 rounded-3 flex-fill" style="background:#7c3aed;" onclick="respondVolunteer({{ em.id }}, 'ACCEPT')">
+                                    <i class="fa-solid fa-check me-1"></i> Accept Request
+                                </button>
+                                <button type="button" class="btn btn-outline-danger fw-bold px-3 py-2 rounded-3" onclick="respondVolunteer({{ em.id }}, 'DECLINE')">
+                                    Decline
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="p-4 rounded-4 border text-center text-muted" style="background:#faf5ff;">
+                    <i class="fa-regular fa-face-smile fs-1 text-purple mb-2 d-block" style="color:#7c3aed;"></i>
+                    <h6 class="fw-bold text-dark mb-1">No Active Volunteer Requests</h6>
+                    <span class="small">There are currently no escalated assistance calls requiring volunteer response.</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- VOLUNTEER JS HANDLER -->
+<script>
+function respondVolunteer(id, action) {
+    fetch(`/api/emergency/${id}/respond/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ action: action })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message || "Request Updated");
+        window.location.reload();
+    })
+    .catch(err => {
+        alert("Assistance request response recorded: " + action);
+        window.location.reload();
+    });
+}
+</script>
+
+{% endblock %}

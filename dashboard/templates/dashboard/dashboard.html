@@ -1,0 +1,745 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid fade-up">
+
+    <!-- ==========================
+         PAGE HEADER
+    =========================== -->
+
+    <div class="row mb-4 align-items-center">
+
+        <div class="col-lg-8">
+
+            <h2 class="fw-bold">
+
+                Welcome,
+
+                {{ request.user.first_name }}
+
+                👋
+
+            </h2>
+
+            <p class="text-muted">
+
+                Community Emergency Response Dashboard
+
+            </p>
+
+        </div>
+
+        <div class="col-lg-4 text-end">
+
+            <a href="{% url 'profile' %}"
+
+               class="btn btn-primary px-4">
+
+                <i class="fa-solid fa-user"></i>
+
+                My Profile
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ==========================
+         ANALYTICS ROW 1
+    =========================== -->
+
+    <div class="row g-4">
+
+        <!-- Residents -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="analytics-card bg1">
+
+                <div>
+
+                    <h6>
+
+                        Total Residents
+
+                    </h6>
+
+                    <h2>
+
+                        {{ resident_count }}
+
+                    </h2>
+
+                </div>
+
+                <i class="fa-solid fa-users"></i>
+
+            </div>
+
+        </div>
+
+        <!-- Volunteers -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="analytics-card bg2">
+
+                <div>
+
+                    <h6>
+
+                        Volunteers
+
+                    </h6>
+
+                    <h2>
+
+                        {{ volunteer_count }}
+
+                    </h2>
+
+                </div>
+
+                <i class="fa-solid fa-hand-holding-heart"></i>
+
+            </div>
+
+        </div>
+
+        <!-- Security -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="analytics-card bg3">
+
+                <div>
+
+                    <h6>
+
+                        Security
+
+                    </h6>
+
+                    <h2>
+
+                        {{ security_count }}
+
+                    </h2>
+
+                </div>
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+            </div>
+
+        </div>
+
+        <!-- Emergency -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="analytics-card bg4">
+
+                <div>
+
+                    <h6>
+
+                        Emergencies
+
+                    </h6>
+
+                    <h2>
+
+                        {{ emergency_count }}
+
+                    </h2>
+
+                </div>
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ==========================
+         ANALYTICS ROW 2
+    =========================== -->
+
+    <div class="row g-4 mt-2">
+
+        <!-- Guardians -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="analytics-card bg5">
+
+                <div>
+
+                    <h6>
+
+                        Guardians
+
+                    </h6>
+
+                    <h2>
+
+                        {{ guardian_count }}
+
+                    </h2>
+
+                </div>
+
+                <i class="fa-solid fa-user-group"></i>
+
+            </div>
+
+        </div>
+
+        <!-- Societies -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="analytics-card bg6">
+
+                <div>
+
+                    <h6>
+
+                        Societies
+
+                    </h6>
+
+                    <h2>
+
+                        {{ society_count }}
+
+                    </h2>
+
+                </div>
+
+                <i class="fa-solid fa-city"></i>
+
+            </div>
+
+        </div>
+
+        <!-- Blocks -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="analytics-card bg7">
+
+                <div>
+
+                    <h6>
+
+                        Blocks
+
+                    </h6>
+
+                    <h2>
+
+                        {{ block_count }}
+
+                    </h2>
+
+                </div>
+
+                <i class="fa-solid fa-building"></i>
+
+            </div>
+
+        </div>
+
+        <!-- Flats -->
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="analytics-card bg8">
+
+                <div>
+
+                    <h6>
+
+                        Flats
+
+                    </h6>
+
+                    <h2>
+
+                        {{ flat_count }}
+
+                    </h2>
+
+                </div>
+
+                <i class="fa-solid fa-door-open"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    
+
+        <!-- =======================================
+            RECENT EMERGENCIES & SOS
+    ======================================== -->
+
+    <div class="row mt-5">
+
+        <!-- Recent Emergency -->
+
+        <div class="col-lg-8">
+
+            <div class="card">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <h4>
+
+                        Recent Emergencies
+
+                    </h4>
+
+                    <a href="{% url 'emergency_list' %}"
+
+                       class="btn btn-sm btn-primary">
+
+                        View All
+
+                    </a>
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>ID</th>
+
+                                <th>Resident</th>
+
+                                <th>Emergency</th>
+
+                                <th>Status</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for emergency in recent_emergencies %}
+
+                            <tr>
+
+                                <td>
+
+                                    {{ emergency.id }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ emergency.user }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ emergency.emergency_type }}
+
+                                </td>
+
+                                <td>
+
+                                    {% if emergency.status == "Pending" %}
+
+                                    <span class="badge bg-warning">
+
+                                        Pending
+
+                                    </span>
+
+                                    {% elif emergency.status == "Resolved" %}
+
+                                    <span class="badge bg-success">
+
+                                        Resolved
+
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="badge bg-danger">
+
+                                        Active
+
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+
+                                <td colspan="4"
+
+                                    class="text-center">
+
+                                    No Emergency Requests
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- =======================================
+     QUICK ACTIONS
+======================================= -->
+
+<div class="row mt-5">
+
+    <div class="col-12">
+
+        <div class="card shadow border-0 rounded-4">
+
+            <div class="card-header bg-white">
+
+                <h4 class="mb-0">
+                    <i class="fa-solid fa-bolt text-warning"></i>
+                    Quick Actions
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-4">
+
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{% url 'resident_add' %}" class="btn btn-primary w-100 py-4">
+                            <i class="fa-solid fa-user-plus fa-2x d-block mb-2"></i>
+                            Add Resident
+                        </a>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{% url 'guardian_add' %}" class="btn btn-success w-100 py-4">
+                            <i class="fa-solid fa-user-group fa-2x d-block mb-2"></i>
+                            Add Guardian
+                        </a>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{% url 'volunteer_add' %}" class="btn btn-warning w-100 py-4">
+                            <i class="fa-solid fa-hand-holding-heart fa-2x d-block mb-2"></i>
+                            Add Volunteer
+                        </a>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{% url 'security_add' %}" class="btn btn-danger w-100 py-4">
+                            <i class="fa-solid fa-shield-halved fa-2x d-block mb-2"></i>
+                            Add Security
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="row g-4 mt-2">
+
+                    <div class="col-lg-4">
+                        <a href="{% url 'society_add' %}" class="btn btn-info w-100 py-4 text-white">
+                            <i class="fa-solid fa-city fa-2x d-block mb-2"></i>
+                            Add Society
+                        </a>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <a href="{% url 'block_add' %}" class="btn btn-secondary w-100 py-4">
+                            <i class="fa-solid fa-building fa-2x d-block mb-2"></i>
+                            Add Block
+                        </a>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <a href="{% url 'flat_add' %}" class="btn btn-dark w-100 py-4">
+                            <i class="fa-solid fa-door-open fa-2x d-block mb-2"></i>
+                            Add Flat
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <!-- SOS -->
+
+        <div class="col-lg-4">
+
+            <div class="sos-card">
+
+                <h3>
+
+                    Emergency SOS
+
+                </h3>
+
+                <p>
+
+                    Press only during emergency situations.
+
+                </p>
+
+                <a href="{% url 'sos_request' %}">
+
+                    <button class="sos-btn">
+
+                        SOS
+
+                    </button>
+
+                </a>
+
+                <p class="mt-4">
+
+                    Your location and request will be sent to nearby volunteers and security staff.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+        <!-- =======================================
+            NOTIFICATIONS & COMMUNITY SUMMARY
+    ======================================== -->
+
+    <div class="row mt-5">
+
+        <!-- Notifications -->
+
+        <div class="col-lg-6">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h4>
+
+                        <i class="fa-solid fa-bell text-warning"></i>
+
+                        Latest Notifications
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <ul class="list-group list-group-flush">
+
+                        <li class="list-group-item d-flex justify-content-between">
+
+                            <span>
+
+                                🚨 New emergency request received
+
+                            </span>
+
+                            <small class="text-muted">
+
+                                2 mins ago
+
+                            </small>
+
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between">
+
+                            <span>
+
+                                👨‍⚕️ Volunteer accepted an emergency
+
+                            </span>
+
+                            <small class="text-muted">
+
+                                15 mins ago
+
+                            </small>
+
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between">
+
+                            <span>
+
+                                🏢 New resident registered
+
+                            </span>
+
+                            <small class="text-muted">
+
+                                1 hour ago
+
+                            </small>
+
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between">
+
+                            <span>
+
+                                🛡 Security personnel updated profile
+
+                            </span>
+
+                            <small class="text-muted">
+
+                                Today
+
+                            </small>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Community Summary -->
+
+        <div class="col-lg-6">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h4>
+
+                        <i class="fa-solid fa-chart-pie text-primary"></i>
+
+                        Community Summary
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row text-center">
+
+                        <div class="col-6 mb-4">
+
+                            <h3 class="text-primary">
+
+                                {{ resident_count }}
+
+                            </h3>
+
+                            <p>
+
+                                Residents
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-6 mb-4">
+
+                            <h3 class="text-success">
+
+                                {{ volunteer_count }}
+
+                            </h3>
+
+                            <p>
+
+                                Volunteers
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-6">
+
+                            <h3 class="text-warning">
+
+                                {{ security_count }}
+
+                            </h3>
+
+                            <p>
+
+                                Security
+
+                            </p>
+
+                        </div>
+
+                        <div class="col-6">
+
+                            <h3 class="text-danger">
+
+                                {{ emergency_count }}
+
+                            </h3>
+
+                            <p>
+
+                                Emergencies
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    
+{% endblock %}

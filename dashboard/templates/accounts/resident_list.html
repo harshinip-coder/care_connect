@@ -1,0 +1,110 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">Residents</h1>
+            <p class="page-subtitle">Manage registered CareConnect residents and their community information.</p>
+        </div>
+        <div>
+            <a href="{% url 'resident_add' %}" class="btn-teal">
+                <i class="fa-solid fa-user-plus"></i> + Add Resident
+            </a>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="admin-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by name, email, phone, society, block, or flat..." value="{{ query|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-teal w-100 py-2 justify-content-center">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- RESIDENTS TABLE CARD -->
+    <div class="admin-card">
+        {% if residents %}
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Resident</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Society</th>
+                            <th>Block</th>
+                            <th>Flat</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for res in residents %}
+                            <tr>
+                                <td class="fw-bold text-secondary">#{{ res.id }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if res.profile_photo %}
+                                            <img src="{{ res.profile_photo.url }}" alt="{{ res.username }}" class="rounded-circle" style="width:38px; height:38px; object-fit:cover; border:1px solid #e2e8f0;">
+                                        {% else %}
+                                            <img src="https://ui-avatars.com/api/?name={{ res.first_name }}+{{ res.last_name }}&background=0284c7&color=fff&bold=true" class="rounded-circle" style="width:38px; height:38px; object-fit:cover;">
+                                        {% endif %}
+                                        <div>
+                                            <strong class="d-block text-dark">{{ res.get_full_name|default:res.username }}</strong>
+                                            <small class="text-muted">@{{ res.username }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ res.email|default:"N/A" }}</td>
+                                <td>{{ res.phone|default:"N/A" }}</td>
+                                <td>{{ res.society.name|default:"N/A" }}</td>
+                                <td>{{ res.block.block_name|default:"N/A" }}</td>
+                                <td>{{ res.flat.flat_number|default:"N/A" }}</td>
+                                <td>
+                                    {% if res.is_active %}
+                                        <span class="badge-status-active">Active</span>
+                                    {% else %}
+                                        <span class="badge-status-inactive">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'resident_edit' res.id %}" class="btn-edit-action me-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'resident_delete' res.id %}" class="btn-delete-action">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state-box">
+                <i class="fa-solid fa-users-slash empty-state-icon"></i>
+                <h4 class="empty-state-title">No Residents Found</h4>
+                <p class="empty-state-sub">There are currently no registered residents matching your criteria in the CareConnect database.</p>
+                <a href="{% url 'resident_add' %}" class="btn-teal">
+                    <i class="fa-solid fa-plus"></i> Add First Resident
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

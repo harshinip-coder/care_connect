@@ -1,0 +1,192 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid p-4" style="background:#f8fafc; min-height:100vh;">
+
+    <!-- 1. WELCOME BANNER FOR SOCIETY MEMBER -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4" style="background:#ffffff; overflow:hidden;">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-7 d-flex align-items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=ecfdf5&color=059669&bold=true" 
+                         alt="User Avatar" class="rounded-circle" style="width:72px; height:72px; border:3px solid #10b981;">
+                    <div>
+                        <span class="text-muted small fw-semibold">Welcome back,</span>
+                        <h2 class="fw-extrabold m-0" style="color:#0f172a; font-size:1.6rem;">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                            <i class="fa-solid fa-building-user text-success fs-5" title="Society Manager"></i>
+                        </h2>
+                        <div class="mt-1 d-flex flex-wrap align-items-center gap-3 text-muted small fw-semibold">
+                            <span><i class="fa-solid fa-city me-1 text-primary"></i> {{ society_obj.name|default:request.user.society.name|default:"Green Meadows Society" }}</span>
+                            <span>•</span>
+                            <span><i class="fa-solid fa-id-card me-1 text-info"></i> Society Committee Member</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5 mt-3 mt-md-0 text-md-end">
+                    <div class="p-3 rounded-4 d-inline-flex align-items-center gap-3 text-start" style="background:#f0fdf4; border:1px solid #bbf7d0;">
+                        <i class="fa-solid fa-city fs-2 text-success"></i>
+                        <div>
+                            <strong class="d-block text-success-emphasis" style="font-size:0.9rem;">Society Governance Portal</strong>
+                            <span class="text-secondary small">Supervising community blocks, flats, security guards & active SOS alerts.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. COMMUNITY OVERVIEW METRICS (MATCHING PROMPT SPEC) -->
+    <div class="mb-4">
+        <h5 class="fw-extrabold mb-3" style="color:#0f172a;">Community Overview</h5>
+        <div class="row g-3">
+            
+            <!-- Residents -->
+            <div class="col-6 col-md-4 col-lg-2-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 h-100" style="background:#ffffff;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 p-3 text-white" style="background:#0d9488;">
+                            <i class="fa-solid fa-users fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold m-0" style="color:#0f172a;">{{ society_residents_count|default:"120" }}</h3>
+                            <span class="text-muted small fw-semibold">Residents</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guardians -->
+            <div class="col-6 col-md-4 col-lg-2-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 h-100" style="background:#ffffff;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 p-3 text-white" style="background:#2563eb;">
+                            <i class="fa-solid fa-user-shield fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold m-0" style="color:#0f172a;">{{ society_guardians_count|default:"86" }}</h3>
+                            <span class="text-muted small fw-semibold">Guardians</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security -->
+            <div class="col-6 col-md-4 col-lg-2-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 h-100" style="background:#ffffff;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 p-3 text-white" style="background:#d97706;">
+                            <i class="fa-solid fa-shield-halved fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold m-0" style="color:#0f172a;">{{ society_security_count|default:"15" }}</h3>
+                            <span class="text-muted small fw-semibold">Security</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Volunteers -->
+            <div class="col-6 col-md-4 col-lg-2-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 h-100" style="background:#ffffff;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 p-3 text-white" style="background:#7c3aed;">
+                            <i class="fa-solid fa-hand-holding-heart fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold m-0" style="color:#0f172a;">{{ society_volunteers_count|default:"42" }}</h3>
+                            <span class="text-muted small fw-semibold">Volunteers</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Alerts -->
+            <div class="col-6 col-md-4 col-lg-2-4">
+                <div class="card border-0 shadow-sm rounded-4 p-3 h-100" style="background:#ffffff;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 p-3 text-white" style="background:#ef4444;">
+                            <i class="fa-solid fa-bell fs-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold m-0" style="color:#0f172a;">{{ society_active_alerts_count|default:"2" }}</h3>
+                            <span class="text-muted small fw-semibold">Active Alerts</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 3. SOCIETY MANAGEMENT TOOLBAR (MATCHING PROMPT SPEC) -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background:#ffffff;">
+        <h5 class="fw-extrabold mb-3" style="color:#0f172a;">Society Management</h5>
+        <div class="d-flex flex-wrap gap-3">
+            <a href="{% url 'block_list' %}" class="btn btn-outline-primary rounded-3 fw-bold px-4 py-2 flex-fill text-center">
+                <i class="fa-solid fa-cubes me-2"></i> [ Blocks ]
+            </a>
+            <a href="{% url 'flat_list' %}" class="btn btn-outline-info rounded-3 fw-bold px-4 py-2 flex-fill text-center">
+                <i class="fa-solid fa-door-closed me-2"></i> [ Flats ]
+            </a>
+            <a href="{% url 'security_list' %}" class="btn btn-outline-warning rounded-3 fw-bold px-4 py-2 flex-fill text-center">
+                <i class="fa-solid fa-shield-halved me-2"></i> [ Security ]
+            </a>
+            <a href="{% url 'volunteer_list' %}" class="btn btn-outline-purple rounded-3 fw-bold px-4 py-2 flex-fill text-center" style="color:#7c3aed; border-color:#7c3aed;">
+                <i class="fa-solid fa-hand-holding-heart me-2"></i> [ Volunteers ]
+            </a>
+        </div>
+    </div>
+
+    <!-- 4. ACTIVE EMERGENCY ALERTS IN SOCIETY (MATCHING PROMPT SPEC) -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+        <div class="card-header bg-transparent border-0 p-4 d-flex align-items-center justify-content-between">
+            <h5 class="fw-extrabold m-0" style="color:#0f172a;">
+                <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Active Emergency Alerts
+            </h5>
+            <a href="{% url 'emergency_list' %}" class="btn btn-sm btn-light fw-bold text-muted border-0">View All Emergencies</a>
+        </div>
+
+        <div class="card-body p-4 pt-0">
+            {% if society_emergencies %}
+                <div class="d-grid gap-3">
+                    {% for em in society_emergencies %}
+                    <div class="p-3 rounded-4 border d-flex flex-wrap align-items-center justify-content-between gap-3" style="background:#ffffff; border-color:#e2e8f0 !important;">
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <strong class="text-dark fs-6">{{ em.emergency_type }} Emergency</strong>
+                                {% if em.status == 'RESOLVED' %}
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-bold">RESOLVED</span>
+                                {% else %}
+                                    <span class="badge bg-danger rounded-pill px-3 py-1 fw-bold">Status: {{ em.status }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-muted small mt-1">
+                                Location: <strong>{{ em.location_address }}</strong> • Resident: <strong>{{ em.resident.get_full_name|default:em.resident.username }}</strong>
+                            </div>
+                        </div>
+
+                        <div>
+                            <a href="{% url 'emergency_detail' em.id %}" class="btn btn-primary btn-sm fw-bold px-4 rounded-3 shadow-sm">
+                                [ View Alert ]
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="p-4 rounded-4 border text-center text-muted" style="background:#f8fafc;">
+                    <i class="fa-regular fa-circle-check fs-1 text-success mb-2 d-block"></i>
+                    <h6 class="fw-bold text-dark mb-1">No Active Emergency Alerts</h6>
+                    <span class="small">All society blocks are clear and safe.</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

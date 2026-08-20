@@ -1,0 +1,572 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ user.get_role_display }} Profile - CareConnect{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid p-4" style="background:#f8fafc; min-height:100vh;">
+
+    <!-- ALERTS -->
+    {% if message %}
+        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> <strong>Success!</strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+
+    {% if error_message %}
+        <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" role="alert">
+            <i class="fa-solid fa-circle-exclamation me-2"></i> <strong>Error!</strong> {{ error_message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+
+    <!-- TOP PROFILE CARD HEADER -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
+        <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+            
+            <!-- AVATAR -->
+            <form action="{% url 'profile' %}" method="POST" enctype="multipart/form-data" id="avatarForm">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_profile">
+                <div class="position-relative d-inline-block">
+                    {% if user.profile_photo %}
+                        <img src="{{ user.profile_photo.url }}" id="profileAvatarPreview"
+                             class="rounded-circle shadow-lg" 
+                             style="width:130px; height:130px; object-fit:cover; border:4px solid #10b981; padding:3px;">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=10b981&color=fff&size=200&bold=true" 
+                             id="profileAvatarPreview"
+                             class="rounded-circle shadow-lg" 
+                             style="width:130px; height:130px; object-fit:cover; border:4px solid #10b981; padding:3px;">
+                    {% endif %}
+                    <label for="profilePhotoInput" class="position-absolute bottom-0 end-0 bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow"
+                           style="width:36px; height:36px; cursor:pointer; border:2px solid #ffffff;" title="Change Photo">
+                        <i class="fa-solid fa-camera fs-6"></i>
+                    </label>
+                    <input type="file" id="profilePhotoInput" name="profile_photo" accept="image/*" class="d-none" onchange="document.getElementById('avatarForm').submit()">
+                </div>
+            </form>
+
+            <!-- NAME & ROLE HEADER -->
+            <div class="flex-grow-1 text-center text-md-start">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+                    <h2 class="fw-extrabold m-0" style="font-size: 1.8rem; letter-spacing: -0.5px;">
+                        {{ user.get_full_name|default:user.username }}
+                    </h2>
+                    <span class="badge bg-emerald-500 text-white rounded-pill px-3 py-1 fw-bold" style="background:#10b981;">
+                        {% if user.role == 'admin' %}Administrator{% elif user.role == 'resident' %}Resident{% elif user.role == 'guardian' %}{{ user.guardian_type|default:"Guardian" }}{% elif user.role == 'security' %}Security Personnel{% elif user.role == 'society_member' %}Society Member{% elif user.role == 'volunteer' %}Volunteer{% else %}{{ user.get_role_display }}{% endif %}
+                    </span>
+                    <span class="badge bg-slate-700 text-slate-200 rounded-pill px-3 py-1 small" style="background:#334155;">
+                        ID: {{ user.employee_id|default:"ADM001" }}
+                    </span>
+                </div>
+
+                <p class="text-slate-300 mb-3 small d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-3">
+                    {% if user.society %}<span><i class="fa-solid fa-building me-1 text-emerald-400"></i> Society: {{ user.society.name }}</span>{% endif %}
+                    {% if user.block %}<span><i class="fa-solid fa-cubes me-1 text-blue-400"></i> Block: {{ user.block.block_name }}</span>{% endif %}
+                    {% if user.flat %}<span><i class="fa-solid fa-door-open me-1 text-purple-400"></i> Flat: {{ user.flat.flat_number }}</span>{% endif %}
+                    <span><i class="fa-solid fa-location-dot me-1 text-rose-400"></i> {{ user.city|default:"Coimbatore" }}, {{ user.state|default:"Tamil Nadu" }}</span>
+                </p>
+
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2">
+                    <a href="#editProfileModal" data-bs-toggle="modal" class="btn btn-emerald btn-sm px-3 py-2 fw-bold text-white rounded-3 d-inline-flex align-items-center gap-2" style="background:#059669; border:none;">
+                        <i class="fa-solid fa-user-pen"></i> Edit Profile
+                    </a>
+                    <a href="#changePasswordModal" data-bs-toggle="modal" class="btn btn-slate-700 btn-sm px-3 py-2 fw-bold text-white rounded-3 d-inline-flex align-items-center gap-2" style="background:#334155; border:none;">
+                        <i class="fa-solid fa-key"></i> Change Password
+                    </a>
+                    <a href="{% url 'forgot_password' %}" class="btn btn-outline-light btn-sm px-3 py-2 fw-bold rounded-3 d-inline-flex align-items-center gap-2">
+                        <i class="fa-solid fa-unlock-keyhole"></i> Forgot Password
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MAIN PROFILE DETAILS GRID -->
+    <div class="row g-4">
+
+        <!-- LEFT COLUMN: PERSONAL & CONTACT INFORMATION -->
+        <div class="col-lg-6">
+
+            <!-- PERSONAL INFORMATION -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+                <div class="card-body p-4">
+                    <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                        <i class="fa-regular fa-id-card text-emerald-600"></i> PERSONAL INFORMATION
+                    </h5>
+
+                    <div class="row g-3 small">
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">First Name</span>
+                            <strong class="text-dark fs-6">{{ user.first_name|default:"-" }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Last Name</span>
+                            <strong class="text-dark fs-6">{{ user.last_name|default:"-" }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Username</span>
+                            <strong class="text-dark fs-6">{{ user.username }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Date of Birth</span>
+                            <strong class="text-dark fs-6">{{ user.dob|date:"d/m/Y"|default:"07/06/2008" }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Gender</span>
+                            <strong class="text-dark fs-6">{{ user.gender|default:"Female" }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Blood Group</span>
+                            <span class="badge bg-danger-subtle text-danger fw-bold rounded-pill px-3 py-1" style="font-size:0.85rem;">{{ user.blood_group|default:"B+" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTACT INFORMATION -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+                <div class="card-body p-4">
+                    <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                        <i class="fa-solid fa-address-book text-blue-600"></i> CONTACT INFORMATION
+                    </h5>
+
+                    <div class="row g-3 small">
+                        <div class="col-12">
+                            <span class="text-muted d-block fw-semibold">Email Address</span>
+                            <strong class="text-dark fs-6"><i class="fa-regular fa-envelope me-2 text-info"></i>{{ user.email|default:"harshinideepan6@gmail.com" }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Phone Number</span>
+                            <strong class="text-dark fs-6"><i class="fa-solid fa-phone me-2 text-success"></i>{{ user.phone|default:"+91 6374643862" }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Alternate Phone</span>
+                            <strong class="text-dark fs-6"><i class="fa-solid fa-phone-volume me-2 text-warning"></i>{{ user.alternate_phone|default:"+91 8344831215" }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESIDENCE / ADDRESS -->
+            <div class="card border-0 shadow-sm rounded-4" style="background:#ffffff;">
+                <div class="card-body p-4">
+                    <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                        <i class="fa-solid fa-location-dot text-rose-600"></i> ADDRESS & LOCATION
+                    </h5>
+
+                    <div class="row g-3 small">
+                        <div class="col-12">
+                            <span class="text-muted d-block fw-semibold">Full Address</span>
+                            <strong class="text-dark fs-6">{{ user.address|default:"KPRIET" }}</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="text-muted d-block fw-semibold">City</span>
+                            <strong class="text-dark fs-6">{{ user.city|default:"Coimbatore" }}</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="text-muted d-block fw-semibold">State</span>
+                            <strong class="text-dark fs-6">{{ user.state|default:"Tamil Nadu" }}</strong>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="text-muted d-block fw-semibold">Pincode</span>
+                            <strong class="text-dark fs-6">{{ user.pincode|default:"637464" }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: ROLE SPECIFIC & ACCOUNT INFO -->
+        <div class="col-lg-6">
+
+            <!-- ROLE SPECIFIC SECTION -->
+            {% if user.role == 'admin' %}
+                <!-- ACCOUNT INFORMATION FOR ADMIN -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                            <i class="fa-solid fa-user-gear text-purple-600"></i> ACCOUNT INFORMATION
+                        </h5>
+
+                        <div class="row g-3 small">
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">User ID / Admin ID</span>
+                                <strong class="text-dark fs-6">{{ user.employee_id|default:"ADM001" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Role</span>
+                                <strong class="text-success fs-6">Administrator</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Status</span>
+                                <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-3 py-1">Active</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Date Joined</span>
+                                <strong class="text-dark fs-6">{{ user.date_joined|date:"d/m/Y" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Last Login</span>
+                                <strong class="text-dark fs-6">{{ user.last_login|date:"d/m/Y H:i"|default:"Just Now" }}</strong>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold text-slate-800 mt-4 mb-3 pt-2 border-top">Security Compliance</h6>
+                        <div class="d-flex flex-wrap gap-3 small">
+                            <span class="badge bg-slate-100 text-slate-800 p-2 rounded-3 border"><i class="fa-solid fa-lock text-success me-1"></i> Password Configured</span>
+                            <span class="badge bg-slate-100 text-slate-800 p-2 rounded-3 border"><i class="fa-solid fa-shield-check text-primary me-1"></i> 2FA Enabled</span>
+                            <span class="badge bg-slate-100 text-slate-800 p-2 rounded-3 border"><i class="fa-solid fa-circle-check text-success me-1"></i> Email Verified</span>
+                            <span class="badge bg-slate-100 text-slate-800 p-2 rounded-3 border"><i class="fa-solid fa-circle-check text-success me-1"></i> Phone Verified</span>
+                        </div>
+                    </div>
+                </div>
+
+            {% elif user.role == 'resident' %}
+                <!-- RESIDENT EMERGENCY & GUARDIAN INFO -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                            <i class="fa-solid fa-heart-pulse text-rose-600"></i> EMERGENCY & GUARDIAN INFORMATION
+                        </h5>
+
+                        <div class="row g-3 small mb-4">
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Primary Guardian</span>
+                                <strong class="text-dark fs-6">Palanisamy (GRD001)</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Secondary Guardian</span>
+                                <strong class="text-dark fs-6">Kavitha (GRD002)</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Medical Conditions</span>
+                                <strong class="text-dark fs-6">{{ user.medical_conditions|default:"None" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Allergies</span>
+                                <strong class="text-dark fs-6">{{ user.allergies|default:"None" }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-4 bg-emerald-50 border border-emerald-200">
+                            <h6 class="fw-bold text-emerald-800 mb-1"><i class="fa-solid fa-shield-cat me-1"></i> Emergency Response Active</h6>
+                            <p class="text-emerald-700 mb-0 small">SOS Emergency protocol is ready. Pressing SOS alerts Primary Guardian, Secondary Guardian, and Security instantly.</p>
+                        </div>
+                    </div>
+                </div>
+
+            {% elif user.role == 'guardian' %}
+                <!-- GUARDIAN DETAILS -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                            <i class="fa-solid fa-user-shield text-purple-600"></i> GUARDIAN DETAILS & ASSIGNED RESIDENT
+                        </h5>
+
+                        <div class="row g-3 small mb-4">
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Guardian ID</span>
+                                <strong class="text-dark fs-6">{{ user.employee_id|default:"GRD001" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Guardian Type</span>
+                                <strong class="text-purple-600 fs-6">{{ user.guardian_type|default:"Primary Guardian" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Relationship</span>
+                                <strong class="text-dark fs-6">{{ user.relationship|default:"Parent" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Assigned Resident</span>
+                                <strong class="text-dark fs-6">Deepan (UK Society, Block A/B, Flat 101)</strong>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-4 bg-slate-50 border">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="fw-bold text-dark">Emergency Status</span>
+                                <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-3 py-1">🟢 No Active Emergency</span>
+                            </div>
+                            <div class="row g-2 small text-muted">
+                                <div class="col-sm-4"><strong>Availability:</strong> 🟢 Available</div>
+                                <div class="col-sm-4"><strong>Notification:</strong> Push + SMS</div>
+                                <div class="col-sm-4"><strong>Response:</strong> Phone Call</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% elif user.role == 'security' %}
+                <!-- SECURITY INFORMATION -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                            <i class="fa-solid fa-shield text-orange-600"></i> SECURITY INFORMATION
+                        </h5>
+
+                        <div class="row g-3 small">
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Security ID</span>
+                                <strong class="text-dark fs-6">{{ user.employee_id|default:"101" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Assigned Society</span>
+                                <strong class="text-dark fs-6">UK</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Assigned Block / Area</span>
+                                <strong class="text-dark fs-6">A</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Assigned Gate / Location</span>
+                                <strong class="text-dark fs-6">{{ user.gate_location|default:"1st gate" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Shift</span>
+                                <strong class="text-dark fs-6">{{ user.shift|default:"night"|title }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Emergency Phone</span>
+                                <strong class="text-dark fs-6">{{ user.emergency_phone|default:"6374643862" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% elif user.role == 'society_member' %}
+                <!-- SOCIETY INFORMATION -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                            <i class="fa-solid fa-users text-indigo-600"></i> SOCIETY INFORMATION
+                        </h5>
+
+                        <div class="row g-3 small">
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Member ID</span>
+                                <strong class="text-dark fs-6">{{ user.employee_id|default:"101" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Society Name</span>
+                                <strong class="text-dark fs-6">UK</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Block</span>
+                                <strong class="text-dark fs-6">A</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Flat Number</span>
+                                <strong class="text-dark fs-6">101</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% elif user.role == 'volunteer' %}
+                <!-- VOLUNTEER INFORMATION -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                            <i class="fa-solid fa-hand-holding-heart text-teal-600"></i> VOLUNTEER INFORMATION
+                        </h5>
+
+                        <div class="row g-3 small">
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Volunteer ID</span>
+                                <strong class="text-dark fs-6">{{ user.employee_id|default:"VOL001" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Volunteer Type</span>
+                                <strong class="text-teal-600 fs-6">{{ user.volunteer_type|default:"Emergency Volunteer" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Society / Block</span>
+                                <strong class="text-dark fs-6">UK Society • Block A</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Joining Date</span>
+                                <strong class="text-dark fs-6">12/08/2026</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Experience</span>
+                                <strong class="text-dark fs-6">{{ user.experience|default:"2 Years" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Availability</span>
+                                <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-3 py-1">{{ user.availability|default:"Available" }}</span>
+                            </div>
+                            <div class="col-12">
+                                <span class="text-muted d-block fw-semibold">Skills</span>
+                                <strong class="text-dark fs-6">{{ user.skills|default:"First Aid, Rescue Assistance" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Preferred Response Area</span>
+                                <strong class="text-dark fs-6">{{ user.preferred_response_area|default:"Block A" }}</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted d-block fw-semibold">Emergency Contact</span>
+                                <strong class="text-dark fs-6">{{ user.emergency_contact_number|default:"9876543210" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- ACCOUNT & SECURITY GENERAL -->
+            <div class="card border-0 shadow-sm rounded-4" style="background:#ffffff;">
+                <div class="card-body p-4">
+                    <h5 class="fw-extrabold text-slate-800 mb-3 pb-2 border-bottom d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                        <i class="fa-solid fa-shield-halved text-emerald-600"></i> ACCOUNT DETAILS & SECURITY
+                    </h5>
+
+                    <div class="row g-3 small">
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">System Role</span>
+                            <strong class="text-dark fs-6">{{ user.get_role_display }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Account Status</span>
+                            <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-3 py-1">Active</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Date Joined</span>
+                            <strong class="text-dark fs-6">{{ user.date_joined|date:"d/m/Y" }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block fw-semibold">Last Login</span>
+                            <strong class="text-dark fs-6">{{ user.last_login|date:"d/m/Y H:i"|default:"Current Session" }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom p-4">
+                <h5 class="modal-title fw-extrabold text-dark"><i class="fa-solid fa-user-pen me-2 text-emerald-600"></i> Edit Profile Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'profile' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_profile">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">First Name</label>
+                            <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">Last Name</label>
+                            <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">Email Address</label>
+                            <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">Phone Number</label>
+                            <input type="text" name="phone" class="form-control" value="{{ user.phone }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">Alternate Phone</label>
+                            <input type="text" name="alternate_phone" class="form-control" value="{{ user.alternate_phone }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">Gender</label>
+                            <select name="gender" class="form-select">
+                                <option value="Male" {% if user.gender == 'Male' or user.gender == 'male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if user.gender == 'Female' or user.gender == 'feamle' or user.gender == 'female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">Blood Group</label>
+                            <select name="blood_group" class="form-select">
+                                <option value="A+" {% if user.blood_group == 'A+' %}selected{% endif %}>A+</option>
+                                <option value="A-" {% if user.blood_group == 'A-' %}selected{% endif %}>A-</option>
+                                <option value="B+" {% if user.blood_group == 'B+' %}selected{% endif %}>B+</option>
+                                <option value="B-" {% if user.blood_group == 'B-' %}selected{% endif %}>B-</option>
+                                <option value="O+" {% if user.blood_group == 'O+' %}selected{% endif %}>O+</option>
+                                <option value="O-" {% if user.blood_group == 'O-' %}selected{% endif %}>O-</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">Date of Birth</label>
+                            <input type="date" name="dob" class="form-control" value="{{ user.dob|date:'Y-m-d' }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-secondary small">Address</label>
+                            <input type="text" name="address" class="form-control" value="{{ user.address }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">City</label>
+                            <input type="text" name="city" class="form-control" value="{{ user.city }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">State</label>
+                            <input type="text" name="state" class="form-control" value="{{ user.state }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Pincode</label>
+                            <input type="text" name="pincode" class="form-control" value="{{ user.pincode }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top p-4">
+                    <button type="button" class="btn btn-light fw-bold rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-emerald text-white fw-bold rounded-3" style="background:#059669; border:none;">Save Profile Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom p-4">
+                <h5 class="modal-title fw-extrabold text-dark"><i class="fa-solid fa-key me-2 text-purple-600"></i> Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'profile' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_password">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small">Current Password</label>
+                        <input type="password" name="old_password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small">New Password</label>
+                        <input type="password" name="new_password1" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small">Confirm New Password</label>
+                        <input type="password" name="new_password2" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-top p-4">
+                    <button type="button" class="btn btn-light fw-bold rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-purple text-white fw-bold rounded-3" style="background:#7c3aed; border:none;">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

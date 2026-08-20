@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareConnect | Create Your Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/fontawesome-fallback.css">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body class="register-page-body">
+
+<div class="login-card-container">
+
+    <!-- LEFT PANEL — DARK NAVY GRADIENT & BRAND STORY -->
+    <section class="login-left-panel">
+        
+        <!-- Brand Header -->
+        <div class="brand-header">
+            <img src="/careconnect-logo.png" alt="CareConnect Logo" class="brand-logo-img" onerror="this.src='/images/careconnect-logo.png'">
+            <div class="brand-text-box">
+                <h1>Care<span>Connect</span></h1>
+                <p>Community Safety, Connected</p>
+            </div>
+        </div>
+
+        <!-- Headline & Story -->
+        <div class="left-headline-box">
+            <h2>Join <span class="highlight-cyan">CareConnect</span><br>and be a part of a<br>safer, stronger<br>community</h2>
+            <p>Create your account to access all the features designed to keep our community safe and connected.</p>
+        </div>
+
+        <!-- Central Community Family Illustration -->
+        <div class="illustration-center-wrapper">
+            <img src="/images/register-family-illustration.svg" alt="Community Family Shield" class="night-bg-illustration">
+        </div>
+
+        <!-- 3 Feature Bullets -->
+        <div class="feature-bullets-list">
+            <div class="feature-bullet-item">
+                <div class="feature-icon-circle bg-teal-glow">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="feature-text-info">
+                    <strong>Connected Community</strong>
+                    <span>Stay connected with residents, guardians, volunteers and neighbors.</span>
+                </div>
+            </div>
+
+            <div class="feature-bullet-item">
+                <div class="feature-icon-circle bg-blue-glow">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="feature-text-info">
+                    <strong>Enhanced Safety</strong>
+                    <span>Quick access to emergency contacts and SOS alerts when you need it most.</span>
+                </div>
+            </div>
+
+            <div class="feature-bullet-item">
+                <div class="feature-icon-circle bg-purple-glow">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div class="feature-text-info">
+                    <strong>Real-time Updates</strong>
+                    <span>Receive important notifications about community events, alerts and more.</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- RIGHT PANEL — CLEAN WHITE REGISTER FORM CARD -->
+    <section class="register-right-panel">
+        
+        <!-- Top Circle Avatar Icon -->
+        <div class="top-avatar-circle-blue">
+            <i class="fa-solid fa-user-plus"></i>
+        </div>
+
+        <!-- Backend Server Connection Status Alert (Populated dynamically via JS) -->
+        <div id="serverStatusContainer" style="display:none; margin-bottom:16px;"></div>
+
+        <!-- Welcome Text -->
+        <div class="welcome-header-text" style="margin-bottom: 24px;">
+            <h2 data-i18n="register_title">Create Account</h2>
+            <p data-i18n="register_btn">Register Account</p>
+        </div>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="login-form-body">
+            
+            <!-- Row 1: Username & First Name -->
+            <div class="form-grid-2col">
+                <div class="form-group-field" style="margin-bottom:0;">
+                    <label for="usernameInput" class="field-label">
+                        Username <span class="required-star">*</span>
+                    </label>
+                    <div class="input-with-icon-box">
+                        <i class="fa-regular fa-user input-left-icon"></i>
+                        <input type="text" id="usernameInput" class="form-input-control" placeholder="Enter username" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-group-field" style="margin-bottom:0;">
+                    <label for="firstNameInput" class="field-label">
+                        First Name <span class="required-star">*</span>
+                    </label>
+                    <div class="input-with-icon-box">
+                        <i class="fa-regular fa-user input-left-icon"></i>
+                        <input type="text" id="firstNameInput" class="form-input-control" placeholder="Enter first name" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Last Name & Role -->
+            <div class="form-grid-2col">
+                <div class="form-group-field" style="margin-bottom:0;">
+                    <label for="lastNameInput" class="field-label">
+                        Last Name <span class="required-star">*</span>
+                    </label>
+                    <div class="input-with-icon-box">
+                        <i class="fa-regular fa-user input-left-icon"></i>
+                        <input type="text" id="lastNameInput" class="form-input-control" placeholder="Enter last name" required>
+                    </div>
+                </div>
+
+                <div class="form-group-field" style="margin-bottom:0;">
+                    <label for="roleSelect" class="field-label">
+                        Role <span class="required-star">*</span>
+                    </label>
+                    <div class="input-with-icon-box">
+                        <i class="fa-solid fa-users input-left-icon"></i>
+                        <select id="roleSelect" class="select-control-box" required>
+                            <option value="" disabled selected>Select Role</option>
+                            <option value="resident">Resident</option>
+                            <option value="guardian">Guardian</option>
+                            <option value="volunteer">Volunteer</option>
+                            <option value="security">Security Staff</option>
+                            <option value="society_member">Society Member</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down select-arrow-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Blood Group & DOB -->
+            <div class="form-grid-2col">
+                <div class="form-group-field" style="margin-bottom:0;">
+                    <label for="bloodGroupSelect" class="field-label">
+                        Blood Group <span class="required-star">*</span>
+                    </label>
+                    <div class="input-with-icon-box">
+                        <i class="fa-solid fa-droplet input-left-icon" style="color:#ef4444;"></i>
+                        <select id="bloodGroupSelect" class="select-control-box" required>
+                            <option value="" disabled selected>Select Blood Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down select-arrow-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group-field" style="margin-bottom:0;">
+                    <label for="dobInput" class="field-label">
+                        Date of Birth (DOB) <span class="required-star">*</span>
+                    </label>
+                    <div class="input-with-icon-box">
+                        <i class="fa-regular fa-calendar input-left-icon"></i>
+                        <input type="text" id="dobInput" class="form-input-control" placeholder="DD/MM/YYYY" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 4: Mobile Number & Email -->
+            <div class="form-grid-2col">
+                <div class="form-group-field" style="margin-bottom:0;">
+                    <label for="mobileInput" class="field-label">
+                        Mobile Number <span class="required-star">*</span>
+                    </label>
+                    <div class="input-with-icon-box">
+                        <i class="fa-solid fa-phone input-left-icon"></i>
+                        <input type="tel" id="mobileInput" class="form-input-control" placeholder="Enter mobile number" required>
+                    </div>
+                </div>
+
+                <div class="form-group-field" style="margin-bottom:0;">
+                    <label for="emailInput" class="field-label">
+                        Email Address <span class="required-star">*</span>
+                    </label>
+                    <div class="input-with-icon-box">
+                        <i class="fa-regular fa-envelope input-left-icon"></i>
+                        <input type="email" id="emailInput" class="form-input-control" placeholder="Enter email address" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 5: Password -->
+            <div class="form-group-field" style="margin-bottom: 14px;">
+                <label for="regPasswordInput" class="field-label">
+                    Password <span class="required-star">*</span>
+                </label>
+                <div class="input-with-icon-box">
+                    <i class="fa-solid fa-lock input-left-icon"></i>
+                    <input type="password" id="regPasswordInput" class="form-input-control" placeholder="Create a strong password" required autocomplete="new-password">
+                    <i class="fa-regular fa-eye toggle-password-icon" id="toggleRegPasswordBtn" title="Toggle password visibility"></i>
+                </div>
+            </div>
+
+            <!-- Row 6: Confirm Password -->
+            <div class="form-group-field" style="margin-bottom: 16px;">
+                <label for="regConfirmPasswordInput" class="field-label">
+                    Confirm Password <span class="required-star">*</span>
+                </label>
+                <div class="input-with-icon-box">
+                    <i class="fa-solid fa-lock input-left-icon"></i>
+                    <input type="password" id="regConfirmPasswordInput" class="form-input-control" placeholder="Confirm your password" required autocomplete="new-password">
+                    <i class="fa-regular fa-eye toggle-password-icon" id="toggleRegConfirmPasswordBtn" title="Toggle password visibility"></i>
+                </div>
+            </div>
+
+            <!-- Security Banner Box -->
+            <div class="security-info-box">
+                <i class="fa-solid fa-shield-halved" style="color:#2563eb; font-size:1.4rem;"></i>
+                <p>Your information is secure and will only be used to provide and improve our community services.</p>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-gradient-create-account">
+                <i class="fa-solid fa-user-plus"></i> Create Account
+            </button>
+
+            <!-- Divider -->
+            <div class="or-divider-line" style="margin: 22px 0;">
+                <span class="or-divider-badge" style="font-weight: 600; color: #64748b;">Already have an account?</span>
+            </div>
+
+            <!-- Login Redirect Link -->
+            <p class="register-redirect-text" style="text-align: center; margin-bottom: 10px;">
+                <a href="/" class="login-here-link">Login here</a>
+            </p>
+
+        </form>
+
+    </section>
+
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/register.js"></script>
+</body>
+</html>

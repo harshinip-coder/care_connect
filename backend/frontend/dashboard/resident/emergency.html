@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Command Center | CareConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+    <style>
+        .flowchart-container-grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; }
+        .flowchart-steps-sidebar { background: #ffffff; border-radius: 20px; padding: 24px; border: 1px solid #e2e8f0; }
+        .flowchart-step-card { padding: 14px 18px; border-radius: 14px; margin-bottom: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; transition: all 0.2s; }
+        .flowchart-step-card.step-completed { border-color: #10b981; background: #f0fdf4; }
+        .flowchart-step-card.step-active { border-color: #ef4444; background: #fef2f2; box-shadow: 0 4px 14px rgba(239,68,68,0.15); }
+        .flowchart-step-card.step-pending { opacity: 0.6; }
+        .step-num-badge { display: inline-block; width: 24px; height: 24px; border-radius: 50%; background: #0f172a; color: #fff; text-align: center; font-size: 0.75rem; font-weight: 800; line-height: 24px; margin-right: 8px; }
+        .emergency-live-card { background: #ffffff; border-radius: 20px; padding: 28px; border: 1px solid #e2e8f0; }
+        .timer-countdown-box { font-size: 2.2rem; font-weight: 900; color: #ef4444; text-align: center; margin: 16px 0; letter-spacing: 2px; }
+        .chat-thread-box { height: 220px; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; overflow-y: auto; background: #f8fafc; margin-bottom: 14px; }
+        .chat-msg { margin-bottom: 10px; font-size: 0.85rem; padding: 8px 12px; border-radius: 10px; width: fit-content; max-width: 85%; }
+        .chat-msg.user-msg { background: #10b981; color: #fff; margin-left: auto; }
+        .chat-msg.responder-msg { background: #e0f2fe; color: #0369a1; }
+        .chat-msg.system-msg { background: #fee2e2; color: #991b1b; width: 100%; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand"><img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"><h2>CareConnect</h2></div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/resident/resident.html" class="nav-item"><i class="fa-solid fa-table-cells-large nav-icon"></i><span data-i18n="nav_dashboard">Dashboard</span></a>
+            <a href="/dashboard/resident/profile.html" class="nav-item"><i class="fa-regular fa-user nav-icon"></i><span data-i18n="nav_profile">Profile</span></a>
+            <a href="/dashboard/resident/guardians.html" class="nav-item"><i class="fa-solid fa-user-shield nav-icon"></i><span data-i18n="nav_guardians">Guardians</span></a>
+            <a href="/dashboard/resident/society.html" class="nav-item"><i class="fa-solid fa-building nav-icon"></i><span data-i18n="nav_society">Society</span></a>
+            <a href="/dashboard/resident/emergency.html" class="nav-item active nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span data-i18n="nav_emergency">Emergency Alert</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left"><button type="button" class="sidebar-toggle-btn"><i class="fa-solid fa-bars"></i></button></div>
+            <div class="topbar-right">
+                <button type="button" class="topbar-icon-btn" id="settingsButton" title="Settings"><i class="fa-solid fa-gear"></i></button>
+                <a href="/dashboard/resident/resident.html" class="banner-btn btn-dark">Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <div>
+                    <h1 style="font-size:1.6rem; font-weight:800; color:#ef4444;" data-i18n="emergency_header"><i class="fa-solid fa-triangle-exclamation"></i> Emergency Alerts Center</h1>
+                    <p style="font-size:0.875rem; color:#64748b;" data-i18n="emergency_header_sub">Monitor active emergency dispatch, responders, and alert history.</p>
+                </div>
+                <button type="button" class="banner-btn btn-teal" onclick="triggerOneTapSOS()"><i class="fa-solid fa-bell me-1"></i> Trigger New SOS</button>
+            </div>
+
+            <!-- EMPTY STATE WHEN NO EMERGENCY ALERTS ACTIVE -->
+            <div id="noEmergencyBox" style="display:none; padding:56px 24px; text-align:center; background:#ffffff; border-radius:24px; border:2px dashed #cbd5e1; box-shadow:0 4px 15px rgba(0,0,0,0.02);">
+                <i class="fa-solid fa-bell-slash" style="font-size:3.2rem; color:#94a3b8; margin-bottom:14px; display:block;"></i>
+                <h3 style="font-size:1.2rem; font-weight:800; color:#1e293b; margin:0 0 6px 0;">No Emergency Alerts</h3>
+                <p style="font-size:0.9rem; color:#64748b; margin:0 0 20px 0;">You have no active or historical emergency alerts at this time.</p>
+                <button type="button" class="banner-btn btn-dark" style="background:#dc2626;" onclick="triggerOneTapSOS()"><i class="fa-solid fa-tower-broadcast me-1"></i> Trigger Emergency SOS</button>
+            </div>
+
+            <!-- ACTIVE EMERGENCY FLOWCHART GRID -->
+            <div class="flowchart-container-grid" id="activeEmergencyGrid">
+                <!-- 5-STEP FLOWCHART PIPELINE SIDEBAR -->
+                <div class="flowchart-steps-sidebar">
+                    <h3 style="font-size:1.05rem; font-weight:800; color:#0f172a; margin-bottom:16px;">Decision Pipeline</h3>
+                    <div class="flowchart-step-card step-completed">
+                        <span class="step-num-badge">1</span><strong>SOS Triggered</strong>
+                        <p style="font-size:0.75rem; color:#64748b; margin-top:2px;">Resident triggered SOS emergency alert.</p>
+                    </div>
+                    <div class="flowchart-step-card step-active">
+                        <span class="step-num-badge" style="background:#ef4444;">2</span><strong>Dispatch Broadcast</strong>
+                        <p style="font-size:0.75rem; color:#64748b; margin-top:2px;">Alerting Guardians, Gate Security, and Volunteers.</p>
+                    </div>
+                    <div class="flowchart-step-card step-pending">
+                        <span class="step-num-badge">3</span><strong>Responder Acceptance</strong>
+                        <p style="font-size:0.75rem; color:#64748b; margin-top:2px;">Awaiting acceptance within response window.</p>
+                    </div>
+                    <div class="flowchart-step-card step-pending">
+                        <span class="step-num-badge">4</span><strong>On-Site Dispatch</strong>
+                        <p style="font-size:0.75rem; color:#64748b; margin-top:2px;">Responder arrival and live status tracking.</p>
+                    </div>
+                    <div class="flowchart-step-card step-pending">
+                        <span class="step-num-badge">5</span><strong>Closure / Escalation</strong>
+                        <p style="font-size:0.75rem; color:#64748b; margin-top:2px;">Incident resolution logging & audit trail.</p>
+                    </div>
+                </div>
+
+                <!-- LIVE EMERGENCY CONTROLLER & CHAT -->
+                <div class="emergency-live-card">
+                    <h3 style="font-size:1.1rem; font-weight:800; color:#0f172a; margin-bottom:4px;">Responder Acceptance Window</h3>
+                    <p style="font-size:0.85rem; color:#64748b;">Automated escalation to emergency contacts in:</p>
+                    <div class="timer-countdown-box" id="escalationTimerDisplay">03:00</div>
+
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <button type="button" class="banner-btn btn-teal" style="flex:1;" onclick="simulateResponseReceived(true)"><i class="fa-solid fa-check"></i> Accept Call (Officer Singh)</button>
+                        <button type="button" class="banner-btn" style="background:#ef4444; color:#fff;" onclick="simulateResponseReceived(false)"><i class="fa-solid fa-person-running"></i> Timeout & Escalate</button>
+                    </div>
+
+                    <h4 style="font-size:0.95rem; font-weight:700; color:#0f172a; margin-bottom:10px;">Live Emergency Chat Thread</h4>
+                    <div class="chat-thread-box" id="emergencyChatThread">
+                        <div class="chat-msg system-msg"><strong>System:</strong> Medical SOS alert broadcasted to Guardians and Gate Security.</div>
+                    </div>
+
+                    <form onsubmit="sendEmergencyChatMessage(event)" style="display:flex; gap:10px;">
+                        <input type="text" id="chatInputMsg" style="flex:1; padding:12px; border:1px solid #cbd5e1; border-radius:10px;" placeholder="Type a message to responders...">
+                        <button type="submit" class="banner-btn btn-dark">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/emergency-manager.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const grid = document.getElementById("activeEmergencyGrid");
+    const noBox = document.getElementById("noEmergencyBox");
+    if (!grid || !noBox) return;
+
+    try {
+        const res = await fetch("/api/emergency/my-active/", { credentials: "include" });
+        const data = await res.json();
+        if (data.has_active && data.emergency) {
+            grid.style.display = "grid";
+            noBox.style.display = "none";
+        } else {
+            grid.style.display = "none";
+            noBox.style.display = "block";
+        }
+    } catch (err) {
+        grid.style.display = "none";
+        noBox.style.display = "block";
+    }
+});
+</script>
+    <script src="/js/auth-guard.js"></script>
+</body>
+</html>

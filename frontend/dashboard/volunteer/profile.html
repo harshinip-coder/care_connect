@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Profile | CareConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand"><img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"><h2>CareConnect</h2></div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/volunteer/volunteer.html" class="nav-item"><i class="fa-solid fa-table-cells-large nav-icon"></i><span>Dashboard</span></a>
+            <a href="/dashboard/volunteer/profile.html" class="nav-item active"><i class="fa-regular fa-user nav-icon"></i><span>Profile</span></a>
+            <a href="/dashboard/volunteer/emergency.html" class="nav-item nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span>Emergency Alerts</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+            </div>
+            <div class="topbar-right">
+                <a href="/dashboard/volunteer/volunteer.html" class="banner-btn btn-dark">Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <div style="background:#ffffff; border-radius:24px; padding:32px; border:1px solid #e2e8f0; max-width:680px;">
+                <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a; margin-bottom:20px;">Volunteer Profile & Skills</h2>
+                <form onsubmit="alert('Profile updated'); event.preventDefault();">
+                    <div style="margin-bottom:16px;">
+                        <label style="font-weight:700; color:#475569; display:block; margin-bottom:6px;">Volunteer Name</label>
+                        <input type="text" class="form-control" value="Anita Roy" style="width:100%; padding:10px; border-radius:10px; border:1px solid #cbd5e1;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="font-weight:700; color:#475569; display:block; margin-bottom:6px;">Special Skills & First Aid</label>
+                        <textarea class="form-control" rows="3" style="width:100%; padding:10px; border-radius:10px; border:1px solid #cbd5e1;">First Aid Certified, Medical Assistance Escort</textarea>
+                    </div>
+                    <button type="submit" class="banner-btn btn-teal" style="width:100%; margin-top:12px;">Save Profile</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+    <script src="/js/auth-guard.js"></script>
+</body>
+</html>

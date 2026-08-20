@@ -1,0 +1,101 @@
+<nav class="navbar" style="background:#ffffff; border-bottom:1px solid #e2e8f0; padding:12px 28px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.05); min-height:68px; position:sticky; top:0; z-index:1020;">
+
+    <!-- TOPBAR LEFT: HAMBURGER & SEARCH INPUT -->
+    <div class="nav-left" style="display:flex; align-items:center; gap:16px; flex:1; max-width:480px; position:relative;">
+        <button type="button" id="sidebarToggleBtn" style="background:none; border:none; color:#64748b; font-size:1.2rem; cursor:pointer; padding:4px;">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="search-box" style="display:flex; align-items:center; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:8px 16px; width:100%; position:relative;">
+            <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8; font-size:0.9rem; margin-right:10px;"></i>
+            <input type="text" id="navbarSearchInput" placeholder="Search anything (SOS, guardians, settings)..." 
+                   style="border:none; background:transparent; font-size:0.875rem; color:#1e293b; outline:none; width:100%;"
+                   onkeyup="handleNavbarSearch(this.value)">
+            
+            <!-- LIVE SEARCH DROPDOWN -->
+            <div id="navbarSearchResults" class="shadow-lg rounded-3 border bg-white" 
+                 style="display:none; position:absolute; top:105%; left:0; right:0; max-height:300px; overflow-y:auto; z-index:1050; padding:8px 0;">
+            </div>
+        </div>
+    </div>
+
+    <!-- TOPBAR RIGHT: BACK TO DASHBOARD, DATE, NOTIFICATION, SETTINGS, USER PROFILE -->
+    <div class="nav-right" style="display:flex; align-items:center; gap:18px;">
+
+        <!-- BACK TO DASHBOARD BUTTON (Screenshot 2) -->
+        {% if request.user.role == 'admin' or request.user.is_superuser %}
+            <a href="{% url 'admin_dashboard' %}" class="btn-back-dashboard d-none d-sm-inline-flex">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+        {% endif %}
+
+        <!-- TODAY DATE DISPLAY -->
+        <div class="today-date d-none d-md-flex" style="align-items:center; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; padding:6px 14px; border-radius:12px; font-size:0.85rem; color:#475569; font-weight:600;">
+            <i class="fa-regular fa-calendar" style="color:#0284c7;"></i>
+            <span id="todayDate">{% now "l, j F Y" %}</span>
+        </div>
+
+        <!-- NOTIFICATION BELL ICON (WITH POPPER DROPDOWN) -->
+        <div class="dropdown" style="position:relative;">
+            <div class="nav-icon" id="notificationBellBtn" data-bs-toggle="dropdown" aria-expanded="false" style="position:relative; cursor:pointer;" onclick="loadNavbarNotifications()">
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#475569; font-size:1.1rem; transition:0.2s;">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+                <span class="badge" id="notificationCountBadge" style="position:absolute; top:-4px; right:-4px; background:#ef4444; color:#ffffff; font-size:0.7rem; font-weight:800; padding:2px 6px; border-radius:10px; border:2px solid #ffffff;">
+                    0
+                </span>
+            </div>
+
+            <!-- NOTIFICATION DROPDOWN MENU -->
+            <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-0 mt-2" style="width:340px; max-height:420px; overflow:hidden; z-index:1060;">
+                <div class="p-3 border-bottom d-flex align-items-center justify-content-between" style="background:#f8fafc;">
+                    <h6 class="fw-bold m-0 text-dark"><i class="fa-solid fa-bell me-2 text-primary"></i> Notifications</h6>
+                    <span class="badge bg-primary rounded-pill small" id="notifDropdownBadge">0 New</span>
+                </div>
+                
+                <div id="notificationDropdownContent" style="max-height:320px; overflow-y:auto;">
+                    <!-- Dynamically loaded via JS or Empty State -->
+                    <div class="p-4 text-center text-muted">
+                        <i class="fa-regular fa-bell-slash fs-3 d-block mb-2 text-secondary opacity-50"></i>
+                        <p class="fw-bold mb-0 text-dark small">No Notifications Available</p>
+                        <span class="small text-muted">You're all caught up!</span>
+                    </div>
+                </div>
+
+                <div class="p-2 border-top text-center bg-light">
+                    <a href="{% url 'emergency_list' %}" class="text-primary small fw-bold text-decoration-none">View All Emergency Logs & Notifications →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS GEAR ICON -->
+        <div class="nav-icon" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Settings & Preferences">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#475569; font-size:1.1rem; transition:0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f8fafc'">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+        </div>
+
+        <!-- USER PROFILE PILL -->
+        <div class="profile" style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.location.href='{% url \'profile\' %}'" title="View Profile">
+            <div style="position:relative;">
+                {% if request.user.profile_photo %}
+                    <img src="{{ request.user.profile_photo.url }}" alt="Profile" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #0284c7;">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=0284c7&color=fff&bold=true" alt="Profile" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #0284c7;">
+                {% endif %}
+                <div style="position:absolute; bottom:0; right:0; width:12px; height:12px; background:#22c55e; border:2px solid #ffffff; border-radius:50%;"></div>
+            </div>
+
+            <div style="display:flex; flex-direction:column;" class="d-none d-sm-flex">
+                <h6 style="font-size:0.9rem; font-weight:700; color:#0f172a; margin:0; line-height:1.2;">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </h6>
+                <small style="font-size:0.75rem; color:#64748b; font-weight:600;">
+                    {{ request.user.role|title|default:"Resident" }}
+                </small>
+            </div>
+        </div>
+
+    </div>
+
+</nav>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin System Settings | CareConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
+            <h2>CareConnect</h2>
+        </div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/admin/admin.html" class="nav-item"><i class="fa-solid fa-table-cells-large nav-icon"></i><span>Dashboard</span></a>
+            <a href="/dashboard/admin/profile.html" class="nav-item"><i class="fa-regular fa-user nav-icon"></i><span>Profile</span></a>
+            <a href="/dashboard/admin/residents.html" class="nav-item"><i class="fa-solid fa-users nav-icon"></i><span>Residents</span></a>
+            <a href="/dashboard/admin/guardians.html" class="nav-item"><i class="fa-solid fa-user-shield nav-icon"></i><span>Guardians</span></a>
+            <a href="/dashboard/admin/society.html" class="nav-item"><i class="fa-solid fa-building nav-icon"></i><span>Society</span></a>
+            <a href="/dashboard/admin/blocks.html" class="nav-item"><i class="fa-solid fa-cubes nav-icon"></i><span>Blocks</span></a>
+            <a href="/dashboard/admin/flats.html" class="nav-item"><i class="fa-solid fa-door-closed nav-icon"></i><span>Flats</span></a>
+            <a href="/dashboard/admin/security.html" class="nav-item"><i class="fa-solid fa-shield-halved nav-icon"></i><span>Security</span></a>
+            <a href="/dashboard/admin/volunteers.html" class="nav-item"><i class="fa-solid fa-hand-holding-heart nav-icon"></i><span>Volunteers</span></a>
+            <a href="/dashboard/admin/emergency.html" class="nav-item nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span>Emergency Alerts</span></a>
+            <a href="/dashboard/admin/settings.html" class="nav-item active"><i class="fa-solid fa-gear nav-icon"></i><span>Settings</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+            </div>
+            <div class="topbar-right">
+                <a href="/dashboard/admin/admin.html" class="banner-btn btn-dark">Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <div style="background:#ffffff; border-radius:24px; padding:32px; border:1px solid #e2e8f0; max-width:720px;">
+                <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a; margin-bottom:12px;">Admin System Settings</h2>
+                <p style="font-size:0.875rem; color:#64748b; margin-bottom:24px;">Configure CareConnect system parameters, response timeouts, and security settings.</p>
+
+                <form onsubmit="alert('System settings updated successfully!'); event.preventDefault();">
+                    <div style="margin-bottom:20px;">
+                        <label style="font-weight:700; color:#475569; display:block; margin-bottom:6px;">SOS Escalation Stage Timeout (Seconds)</label>
+                        <input type="number" class="form-control" value="10" min="5" max="60" style="width:100%; padding:12px; border-radius:10px; border:1px solid #cbd5e1; font-weight:700;">
+                        <span style="font-size:0.78rem; color:#64748b; margin-top:4px; display:block;">Time window before an unresponded SOS automatically escalates to the next responder.</span>
+                    </div>
+
+                    <div style="margin-bottom:20px;">
+                        <label style="font-weight:700; color:#475569; display:block; margin-bottom:6px;">System Notification Delivery</label>
+                        <select class="form-control" style="width:100%; padding:12px; border-radius:10px; border:1px solid #cbd5e1; font-weight:600;">
+                            <option>In-App Push & SMS Notifications</option>
+                            <option>In-App Only</option>
+                            <option>All Channels (In-App, SMS, Email)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="banner-btn btn-teal" style="width:100%; padding:14px; margin-top:8px;">Save Settings Configuration</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+    <script src="/js/auth-guard.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <!-- Left Hand Gradient (Blue) -->
+    <linearGradient id="leftHandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0066ff" />
+      <stop offset="100%" stop-color="#0044cc" />
+    </linearGradient>
+    <!-- Right Hand Gradient (Teal/Cyan) -->
+    <linearGradient id="rightHandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d2b3" />
+      <stop offset="100%" stop-color="#00a896" />
+    </linearGradient>
+    <!-- Red SOS Button Gradient -->
+    <radialGradient id="sosRadGrad" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ff3b30" />
+      <stop offset="100%" stop-color="#cc0000" />
+    </radialGradient>
+    <!-- SOS Button Shadow -->
+    <filter id="sosShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Left Blue Curved Hand/Body forming Heart -->
+  <circle cx="130" cy="100" r="28" fill="#0066ff" />
+  <path d="M250 150 C200 80, 140 120, 100 180 C70 230, 80 310, 160 370 C200 400, 250 420, 250 420 C250 420, 120 380, 75 300 C40 230, 60 140, 130 120 C180 105, 230 135, 250 150 Z" fill="url(#leftHandGrad)" />
+  
+  <!-- Right Teal Curved Hand/Body forming Heart -->
+  <circle cx="370" cy="100" r="28" fill="#00d2b3" />
+  <path d="M250 150 C300 80, 360 120, 400 180 C430 230, 420 310, 340 370 C300 400, 250 420, 250 420 C250 420, 380 380, 425 300 C460 230, 440 140, 370 120 C320 105, 270 135, 250 150 Z" fill="url(#rightHandGrad)" />
+
+  <!-- Embracing Bottom Palm Lines -->
+  <path d="M110 320 Q 250 430, 390 320 Q 250 400, 110 320 Z" fill="url(#leftHandGrad)" opacity="0.9" />
+
+  <!-- Center Family Silhouette Inside Heart -->
+  <!-- Father (Left Adult) -->
+  <circle cx="195" cy="240" r="22" fill="#0b3c75" />
+  <path d="M160 330 C160 270, 230 270, 230 330 Z" fill="#0b3c75" />
+
+  <!-- Mother (Right Adult) -->
+  <circle cx="305" cy="245" r="22" fill="#007a78" />
+  <path d="M270 330 C270 275, 340 275, 340 330 Z" fill="#007a78" />
+
+  <!-- Boy Child (Left) -->
+  <circle cx="225" cy="290" r="16" fill="#0055d4" />
+  <path d="M200 350 C200 310, 250 310, 250 350 Z" fill="#0055d4" />
+
+  <!-- Girl Child (Right) -->
+  <circle cx="275" cy="295" r="16" fill="#00b39b" />
+  <path d="M250 350 C250 315, 300 315, 300 350 Z" fill="#00b39b" />
+
+  <!-- Center Red Circular SOS Button -->
+  <g filter="url(#sosShadow)">
+    <circle cx="250" cy="205" r="42" fill="#ffffff" />
+    <circle cx="250" cy="205" r="38" fill="url(#sosRadGrad)" />
+    <!-- SOS Text -->
+    <text x="250" y="210" font-family="'Inter', sans-serif" font-weight="900" font-size="24" fill="#ffffff" text-anchor="middle">SOS</text>
+    <!-- Heartbeat Pulse Line -->
+    <path d="M222 224 L236 224 L242 216 L248 230 L254 214 L260 224 L278 224" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  </g>
+</svg>

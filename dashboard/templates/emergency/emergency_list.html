@@ -1,0 +1,122 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">Emergency Alerts</h1>
+            <p class="page-subtitle">Monitor and manage community SOS emergency requests and escalation incidents.</p>
+        </div>
+        <div>
+            <a href="{% url 'emergency_add' %}" class="btn-teal" style="background:#ef4444; shadow:0 4px 10px rgba(239,68,68,0.3);">
+                <i class="fa-solid fa-triangle-exclamation"></i> + Create Emergency Alert
+            </a>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="admin-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by resident, emergency type, location, status..." value="{{ query|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-teal w-100 py-2 justify-content-center">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- EMERGENCY TABLE CARD -->
+    <div class="admin-card">
+        {% if emergencies %}
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Resident</th>
+                            <th>Emergency Type</th>
+                            <th>Location Address</th>
+                            <th>Created At</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for em in emergencies %}
+                            <tr>
+                                <td class="fw-bold text-danger">#SOS-{{ em.id }}</td>
+                                <td>
+                                    <strong class="d-block text-dark">{{ em.resident.get_full_name|default:em.resident.username }}</strong>
+                                    <small class="text-muted">@{{ em.resident.username }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1 fw-bold">
+                                        <i class="fa-solid fa-kit-medical me-1"></i> {{ em.emergency_type }}
+                                    </span>
+                                </td>
+                                <td>{{ em.location_address|default:"Community Residency" }}</td>
+                                <td><small class="text-secondary fw-semibold">{{ em.created_at|date:"h:i A, M d Y" }}</small></td>
+                                <td>
+                                    {% if em.status == 'ACTIVE' or em.status == 'PENDING' %}
+                                        <span class="badge-status-danger">ACTIVE</span>
+                                    {% elif em.status == 'IN_PROGRESS' or em.status == 'RESPONDING' %}
+                                        <span class="badge-status-pending">IN PROGRESS</span>
+                                    {% elif em.status == 'RESOLVED' %}
+                                        <span class="badge-status-active">RESOLVED</span>
+                                    {% elif em.status == 'CANCELLED' %}
+                                        <span class="badge-status-inactive">CANCELLED</span>
+                                    {% else %}
+                                        <span class="badge-status-broadcast">{{ em.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if em.assigned_responder %}
+                                        <span class="fw-bold text-dark">{{ em.assigned_responder.get_full_name|default:em.assigned_responder.username }}</span>
+                                    {% elif em.assigned_volunteer %}
+                                        <span class="fw-bold text-dark">{{ em.assigned_volunteer.first_name }} {{ em.assigned_volunteer.last_name }}</span>
+                                    {% elif em.assigned_security %}
+                                        <span class="fw-bold text-dark">{{ em.assigned_security.first_name }} {{ em.assigned_security.last_name }}</span>
+                                    {% else %}
+                                        <span class="text-muted small">Escalating...</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'emergency_detail' em.id %}" class="btn-view-action me-1">
+                                        <i class="fa-solid fa-eye"></i> View
+                                    </a>
+                                    <a href="{% url 'emergency_edit' em.id %}" class="btn-edit-action me-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'emergency_delete' em.id %}" class="btn-delete-action">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state-box">
+                <i class="fa-solid fa-bell-slash empty-state-icon text-success opacity-75"></i>
+                <h4 class="empty-state-title">No Emergency Alerts</h4>
+                <p class="empty-state-sub">There are currently no active or historical emergency alerts logged in the database.</p>
+                <a href="{% url 'emergency_add' %}" class="btn-teal">
+                    <i class="fa-solid fa-plus"></i> Create Test Emergency
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

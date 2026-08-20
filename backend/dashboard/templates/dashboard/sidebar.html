@@ -1,0 +1,194 @@
+<div class="sidebar" style="background:#091e36; width:260px; min-height:100vh; display:flex; flex-direction:column; padding:20px 14px;">
+
+    <!-- BRANDING LOGO -->
+    <div class="logo" style="display:flex; align-items:center; gap:12px; padding:10px 12px 24px; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:16px;">
+        <div style="background:#0284c7; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:1.2rem; box-shadow:0 4px 12px rgba(2,132,199,0.4);">
+            <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+        <div>
+            <h2 style="font-size:1.35rem; font-weight:800; color:#ffffff; margin:0; line-height:1.1;">CareConnect</h2>
+            <span style="font-size:0.68rem; color:#38bdf8; font-weight:700; letter-spacing:0.4px;">
+                {% if request.user.role == 'admin' or request.user.is_superuser %}ADMIN PORTAL
+                {% elif request.user.role == 'resident' %}RESIDENT PORTAL
+                {% elif request.user.role == 'guardian' %}GUARDIAN PORTAL
+                {% elif request.user.role == 'society_member' %}SOCIETY PORTAL
+                {% elif request.user.role == 'security' %}SECURITY PORTAL
+                {% elif request.user.role == 'volunteer' %}VOLUNTEER PORTAL
+                {% else %}COMMUNITY CARE{% endif %}
+            </span>
+        </div>
+    </div>
+
+    <!-- MENU LABEL -->
+    <div style="font-size:0.7rem; font-weight:700; color:#64748b; letter-spacing:1px; margin:0 12px 10px; text-transform:uppercase;">MENU</div>
+
+    <!-- MENU LINKS -->
+    <ul class="menu" style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:4px; flex:1;">
+
+        <!-- 1. ADMIN SIDEBAR -->
+        {% if request.user.role == 'admin' or request.user.is_superuser %}
+            <li>
+                <a href="{% url 'admin_dashboard' %}" class="nav-link-item {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'profile' %}" class="nav-link-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'resident_list' %}" class="nav-link-item {% if 'resident' in request.resolver_match.url_name and request.resolver_match.url_name != 'resident_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Residents</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'guardian_list' %}" class="nav-link-item {% if 'guardian' in request.resolver_match.url_name and request.resolver_match.url_name != 'guardian_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Guardians</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'society_list' %}" class="nav-link-item {% if 'society' in request.resolver_match.url_name and request.resolver_match.url_name != 'society_member_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-city"></i>
+                    <span>Society</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'block_list' %}" class="nav-link-item {% if 'block' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fa-solid fa-cubes"></i>
+                    <span>Blocks</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'flat_list' %}" class="nav-link-item {% if 'flat' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fa-solid fa-door-closed"></i>
+                    <span>Flats</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'security_list' %}" class="nav-link-item {% if 'security' in request.resolver_match.url_name and request.resolver_match.url_name != 'security_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Security Personnel</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'volunteer_list' %}" class="nav-link-item {% if 'volunteer' in request.resolver_match.url_name and request.resolver_match.url_name != 'volunteer_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                    <span>Volunteers</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'emergency_list' %}" class="nav-link-item {% if 'emergency' in request.resolver_match.url_name or request.resolver_match.url_name == 'sos_request' %}active{% endif %}">
+                    <i class="fa-solid fa-bell-concierge text-red"></i>
+                    <span>Emergency Alerts</span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#settingsModal" class="nav-link-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+
+        <!-- 2. RESIDENT SIDEBAR -->
+        {% elif request.user.role == 'resident' %}
+            <li>
+                <a href="{% url 'resident_dashboard' %}" class="nav-link-item {% if request.resolver_match.url_name == 'resident_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'profile' %}" class="nav-link-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'my_guardians' %}" class="nav-link-item {% if request.resolver_match.url_name == 'my_guardians' %}active{% endif %}">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>My Guardians</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'resident_dashboard' %}#sosSection" class="nav-link-item text-danger fw-bold">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>Emergency SOS</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'emergency_list' %}" class="nav-link-item {% if request.resolver_match.url_name == 'emergency_list' %}active{% endif %}">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Emergency History</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'emergency_list' %}" class="nav-link-item">
+                    <i class="fa-regular fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#settingsModal" class="nav-link-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+
+        <!-- 3. OTHER ROLES -->
+        {% else %}
+            <li>
+                <a href="{% url 'dashboard' %}" class="nav-link-item">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'profile' %}" class="nav-link-item">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'emergency_list' %}" class="nav-link-item">
+                    <i class="fa-solid fa-bell-concierge"></i>
+                    <span>Emergency Alerts</span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#settingsModal" class="nav-link-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        {% endif %}
+
+    </ul>
+
+    <!-- HELP FOOTER CARD -->
+    <div style="background:rgba(255,255,255,0.06); padding:16px; border-radius:16px; border:1px solid rgba(255,255,255,0.08); margin-top:20px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div style="background:#0284c7; width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:1.1rem; flex-shrink:0;">
+                <i class="fa-solid fa-phone-volume"></i>
+            </div>
+            <div>
+                <span style="font-size:0.75rem; color:#94a3b8; display:block; font-weight:600;">We're here for you</span>
+                <strong style="font-size:0.85rem; color:#ffffff; display:block;">Stay Safe, Stay Connected</strong>
+                <span style="font-size:0.75rem; color:#38bdf8; font-weight:700; display:block; margin-top:2px;">1800-123-4567</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGOUT BUTTON -->
+    <div style="margin-top:12px; padding:0 4px;">
+        <a href="{% url 'logout' %}" style="display:flex; align-items:center; gap:10px; color:#ef4444; font-weight:700; font-size:0.9rem; text-decoration:none; padding:10px 12px; border-radius:10px; transition:0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+
+</div>

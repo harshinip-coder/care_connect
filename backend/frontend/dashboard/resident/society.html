@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society & Governance | CareConnect Resident</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+    <style>
+        .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .custom-table th { padding: 14px 16px; font-weight: 700; color: #64748b; font-size: 0.82rem; border-bottom: 2px solid #f1f5f9; background: #f8fafc; }
+        .custom-table td { padding: 14px 16px; font-size: 0.88rem; color: #0f172a; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+
+        .tabs-header { display: flex; gap: 10px; margin-bottom: 20px; background: #ffffff; padding: 6px; border-radius: 16px; border: 1px solid #e2e8f0; width: fit-content; }
+        .tab-item { padding: 10px 22px; border-radius: 12px; font-weight: 700; font-size: 0.88rem; color: #64748b; border: none; background: transparent; cursor: pointer; transition: all 0.2s; }
+        .tab-item.active { background: #0284c7; color: #ffffff; box-shadow: 0 4px 12px rgba(2,132,199,0.25); }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand"><img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"><h2>CareConnect</h2></div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/resident/resident.html" class="nav-item"><i class="fa-solid fa-table-cells-large nav-icon"></i><span data-i18n="nav_dashboard">Dashboard</span></a>
+            <a href="/dashboard/resident/profile.html" class="nav-item"><i class="fa-regular fa-user nav-icon"></i><span data-i18n="nav_profile">Profile</span></a>
+            <a href="/dashboard/resident/guardians.html" class="nav-item"><i class="fa-solid fa-user-shield nav-icon"></i><span data-i18n="nav_guardians">Guardians</span></a>
+            <a href="/dashboard/resident/society.html" class="nav-item active"><i class="fa-solid fa-building nav-icon"></i><span data-i18n="nav_society">Society</span></a>
+            <a href="/dashboard/resident/emergency.html" class="nav-item nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span data-i18n="nav_emergency">Emergency Alert</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+                <div class="search-box-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" class="topbar-search-input" placeholder="Search societies & committee..." oninput="filterModuleList(this.value)">
+                </div>
+            </div>
+            <div class="topbar-right">
+                <a href="/dashboard/resident/resident.html" class="banner-btn btn-dark"><i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+                <div>
+                    <h1 style="font-size:1.6rem; font-weight:900; color:#0f172a; margin:0;">Society Information & Directory</h1>
+                    <p style="font-size:0.9rem; color:#64748b; margin-top:4px;">Explore registered community societies and administrative committee members.</p>
+                </div>
+            </div>
+
+            <!-- TABS FOR SOCIETY VS SOCIETY MEMBER -->
+            <div class="tabs-header">
+                <button type="button" class="tab-item active" id="tabSocieties" onclick="switchResidentSocietyTab('society')"><i class="fa-solid fa-building me-1"></i> Societies</button>
+                <button type="button" class="tab-item" id="tabMembers" onclick="switchResidentSocietyTab('society_member')"><i class="fa-solid fa-users-gear me-1"></i> Society Members</button>
+            </div>
+
+            <div style="background:#ffffff; border-radius:20px; padding:24px; border:1px solid #e2e8f0; box-shadow:0 2px 4px rgba(0,0,0,0.02); overflow-x:auto;">
+                <table class="custom-table">
+                    <thead>
+                        <tr id="tableHeadRow">
+                        </tr>
+                    </thead>
+                    <tbody id="moduleTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script src="/js/module-crud.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    await verifySessionAndRole("resident");
+    initModulePage("society");
+});
+
+function switchResidentSocietyTab(tab) {
+    document.getElementById("tabSocieties").classList.toggle("active", tab === "society");
+    document.getElementById("tabMembers").classList.toggle("active", tab === "society_member");
+    initModulePage(tab);
+}
+</script>
+</body>
+</html>

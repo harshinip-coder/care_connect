@@ -1,0 +1,259 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Add New Member - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="background:#f8fafc; min-height:100vh;">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h3 class="fw-extrabold text-dark m-0"><i class="fa-solid fa-user-plus text-emerald-600 me-2"></i> Add New System Member</h3>
+            <p class="text-muted small m-0 mt-1">Create an active account for a Resident, Guardian, Security Personnel, Volunteer, Society Member, or Admin.</p>
+        </div>
+        <a href="{% url 'member_list' %}" class="btn btn-outline-secondary rounded-3 fw-bold small">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Members List
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4" style="background:#ffffff;">
+        <div class="card-body p-4">
+            <form action="{% url 'member_add' %}" method="POST" id="addMemberForm">
+                {% csrf_token %}
+
+                <!-- ROLE SELECTION -->
+                <div class="row g-3 mb-4 p-3 rounded-4" style="background:#f1f5f9;">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">System Role <span class="text-danger">*</span></label>
+                        <select name="role" id="roleSelect" class="form-select fw-bold text-emerald-700" onchange="toggleRoleFields()">
+                            {% for role_code, role_label in role_choices %}
+                                <option value="{{ role_code }}" {% if role_code == initial_role %}selected{% endif %}>{{ role_label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">Default Password <span class="text-danger">*</span></label>
+                        <input type="text" name="password" class="form-control fw-bold" value="Harshini@2008" required>
+                    </div>
+                </div>
+
+                <!-- PERSONAL INFORMATION -->
+                <h5 class="fw-extrabold text-dark mb-3 border-bottom pb-2"><i class="fa-regular fa-id-card me-2 text-primary"></i> Personal Information</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Username <span class="text-danger">*</span></label>
+                        <input type="text" name="username" class="form-control" placeholder="e.g. Deepan" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">First Name <span class="text-danger">*</span></label>
+                        <input type="text" name="first_name" class="form-control" placeholder="First Name" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Last Name</label>
+                        <input type="text" name="last_name" class="form-control" placeholder="Last Name">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">User ID / ID Badge</label>
+                        <input type="text" name="employee_id" class="form-control" placeholder="e.g. RES001, GRD001, 101, VOL001">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Date of Birth</label>
+                        <input type="date" name="dob" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Gender</label>
+                        <select name="gender" class="form-select">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Blood Group</label>
+                        <select name="blood_group" class="form-select">
+                            <option value="B+">B+</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- CONTACT INFORMATION -->
+                <h5 class="fw-extrabold text-dark mb-3 border-bottom pb-2"><i class="fa-solid fa-address-book me-2 text-info"></i> Contact Information</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Email Address <span class="text-danger">*</span></label>
+                        <input type="email" name="email" class="form-control" placeholder="email@example.com" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Phone Number <span class="text-danger">*</span></label>
+                        <input type="text" name="phone" class="form-control" placeholder="+91 6374643862" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Alternate Phone Number</label>
+                        <input type="text" name="alternate_phone" class="form-control" placeholder="+91 8344831215">
+                    </div>
+                </div>
+
+                <!-- LOCATION & RESIDENCE -->
+                <h5 class="fw-extrabold text-dark mb-3 border-bottom pb-2"><i class="fa-solid fa-location-dot me-2 text-rose-600"></i> Location & Residence</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Society</label>
+                        <select name="society" class="form-select">
+                            {% for soc in societies %}
+                                <option value="{{ soc.id }}">{{ soc.name }}</option>
+                            {% empty %}
+                                <option value="">UK</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Block</label>
+                        <select name="block" class="form-select">
+                            {% for blk in blocks %}
+                                <option value="{{ blk.id }}">Block {{ blk.block_name }}</option>
+                            {% empty %}
+                                <option value="">Block A</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Flat</label>
+                        <select name="flat" class="form-select">
+                            {% for flt in flats %}
+                                <option value="{{ flt.id }}">Flat {{ flt.flat_number }}</option>
+                            {% empty %}
+                                <option value="">Flat 101</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-secondary small">Full Address</label>
+                        <input type="text" name="address" class="form-control" placeholder="irugalur">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">City</label>
+                        <input type="text" name="city" class="form-control" value="Erode" placeholder="Erode">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">State</label>
+                        <input type="text" name="state" class="form-control" value="Tamil Nadu" placeholder="Tamil Nadu">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">Pincode</label>
+                        <input type="text" name="pincode" class="form-control" value="637464" placeholder="637464">
+                    </div>
+                </div>
+
+                <!-- ROLE SPECIFIC FIELDS -->
+                <div id="guardianFields" class="role-fields mb-4 p-3 rounded-4" style="background:#faf5ff; border:1px solid #e9d5ff;">
+                    <h6 class="fw-bold text-purple-800 mb-3"><i class="fa-solid fa-user-shield me-2"></i> Guardian Specific Information</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Guardian Type</label>
+                            <select name="guardian_type" class="form-select">
+                                <option value="Primary Guardian">Primary Guardian</option>
+                                <option value="Secondary Guardian">Secondary Guardian</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Relationship</label>
+                            <select name="relationship" class="form-select">
+                                <option value="Parent">Parent</option>
+                                <option value="Father">Father</option>
+                                <option value="Mother">Mother</option>
+                                <option value="Brother">Brother</option>
+                                <option value="Sister">Sister</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Assigned Resident</label>
+                            <select name="assigned_resident" class="form-select">
+                                {% for res in residents %}
+                                    <option value="{{ res.id }}">{{ res.get_full_name|default:res.username }} ({{ res.username }})</option>
+                                {% empty %}
+                                    <option value="">Deepan</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="securityFields" class="role-fields mb-4 p-3 rounded-4" style="background:#fffbeb; border:1px solid #fde68a;">
+                    <h6 class="fw-bold text-amber-800 mb-3"><i class="fa-solid fa-shield me-2"></i> Security Personnel Information</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Assigned Gate / Location</label>
+                            <input type="text" name="gate_location" class="form-control" placeholder="e.g. 1st gate, 2nd gate">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Shift</label>
+                            <select name="shift" class="form-select">
+                                <option value="Night">Night</option>
+                                <option value="Morning">Morning</option>
+                                <option value="Evening">Evening</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Emergency Contact Phone</label>
+                            <input type="text" name="emergency_phone" class="form-control" placeholder="6374643862">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="volunteerFields" class="role-fields mb-4 p-3 rounded-4" style="background:#f0fdf4; border:1px solid #bbf7d0;">
+                    <h6 class="fw-bold text-emerald-800 mb-3"><i class="fa-solid fa-hand-holding-heart me-2"></i> Volunteer Information</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Volunteer Type</label>
+                            <input type="text" name="volunteer_type" class="form-control" value="Emergency Volunteer">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Experience</label>
+                            <input type="text" name="experience" class="form-control" value="2 Years">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-secondary small">Preferred Response Area</label>
+                            <input type="text" name="preferred_response_area" class="form-control" value="Block A">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">Skills</label>
+                            <input type="text" name="skills" class="form-control" value="First Aid, Rescue Assistance">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">Emergency Contact Number</label>
+                            <input type="text" name="emergency_contact_number" class="form-control" value="9876543210">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-end gap-3 mt-4">
+                    <a href="{% url 'member_list' %}" class="btn btn-light rounded-3 fw-bold px-4">Cancel</a>
+                    <button type="submit" class="btn btn-emerald text-white fw-bold px-5 py-2.5 rounded-3 shadow-sm" style="background:#059669; border:none;">
+                        <i class="fa-solid fa-check me-2"></i> Create Member Account
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function toggleRoleFields() {
+    var role = document.getElementById('roleSelect').value;
+    document.getElementById('guardianFields').style.display = (role === 'guardian') ? 'block' : 'none';
+    document.getElementById('securityFields').style.display = (role === 'security') ? 'block' : 'none';
+    document.getElementById('volunteerFields').style.display = (role === 'volunteer') ? 'block' : 'none';
+}
+document.addEventListener('DOMContentLoaded', toggleRoleFields);
+</script>
+{% endblock %}

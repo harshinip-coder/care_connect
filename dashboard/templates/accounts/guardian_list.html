@@ -1,0 +1,109 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">Guardians</h1>
+            <p class="page-subtitle">Manage emergency contact guardians and their resident relationships.</p>
+        </div>
+        <div>
+            <a href="{% url 'guardian_add' %}" class="btn-teal">
+                <i class="fa-solid fa-user-shield"></i> + Add Guardian
+            </a>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="admin-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by guardian name, email, phone, or resident..." value="{{ query|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-teal w-100 py-2 justify-content-center">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- GUARDIANS TABLE CARD -->
+    <div class="admin-card">
+        {% if guardians %}
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Guardian Name</th>
+                            <th>Associated Resident</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Relationship</th>
+                            <th>Type</th>
+                            <th>Availability</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for g in guardians %}
+                            <tr>
+                                <td class="fw-bold text-secondary">#{{ g.id }}</td>
+                                <td>
+                                    <strong class="d-block text-dark">{{ g.first_name }} {{ g.last_name }}</strong>
+                                </td>
+                                <td>
+                                    {% if g.resident %}
+                                        <span class="fw-bold text-dark">{{ g.resident.get_full_name|default:g.resident.username }}</span>
+                                        <small class="text-muted d-block">@{{ g.resident.username }}</small>
+                                    {% else %}
+                                        <span class="text-muted">Unlinked</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ g.email|default:"N/A" }}</td>
+                                <td>{{ g.phone|default:"N/A" }}</td>
+                                <td><span class="badge bg-light text-dark border px-2 py-1">{{ g.relationship }}</span></td>
+                                <td>
+                                    {% if g.is_primary %}
+                                        <span class="badge-status-active">Primary Guardian</span>
+                                    {% else %}
+                                        <span class="badge-status-inactive">Secondary Guardian</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge-status-active">{{ g.availability }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'guardian_edit' g.id %}" class="btn-edit-action me-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'guardian_delete' g.id %}" class="btn-delete-action">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state-box">
+                <i class="fa-solid fa-user-shield empty-state-icon"></i>
+                <h4 class="empty-state-title">No Guardians Found</h4>
+                <p class="empty-state-sub">There are currently no guardian records matching your search in the database.</p>
+                <a href="{% url 'guardian_add' %}" class="btn-teal">
+                    <i class="fa-solid fa-plus"></i> Add First Guardian
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

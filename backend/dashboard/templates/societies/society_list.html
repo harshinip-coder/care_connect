@@ -1,0 +1,92 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">Society Information</h1>
+            <p class="page-subtitle">Manage CareConnect community blocks, amenities, and security alerts.</p>
+        </div>
+        <div>
+            <a href="{% url 'society_add' %}" class="btn-teal">
+                <i class="fa-solid fa-city"></i> + Add Society
+            </a>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="admin-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by society name, address, city, or pincode..." value="{{ query|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-teal w-100 py-2 justify-content-center">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- SOCIETY TABLE CARD -->
+    <div class="admin-card">
+        {% if societies %}
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Society Name</th>
+                            <th>Address</th>
+                            <th>City / Pincode</th>
+                            <th>Blocks</th>
+                            <th>Residents</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in societies %}
+                            <tr>
+                                <td class="fw-bold text-secondary">#{{ s.id }}</td>
+                                <td>
+                                    <strong class="d-block text-dark">{{ s.name }}</strong>
+                                </td>
+                                <td>{{ s.address|default:"N/A" }}</td>
+                                <td>{{ s.city }}{% if s.pincode %} - {{ s.pincode }}{% endif %}</td>
+                                <td><span class="badge bg-light text-dark border px-2 py-1 fw-bold">{{ s.block_count }} Block{% if s.block_count != 1 %}s{% endif %}</span></td>
+                                <td><span class="badge bg-light text-dark border px-2 py-1 fw-bold">{{ s.resident_count }} Resident{% if s.resident_count != 1 %}s{% endif %}</span></td>
+                                <td><span class="badge-status-active">Active</span></td>
+                                <td class="text-end">
+                                    <a href="{% url 'society_edit' s.id %}" class="btn-edit-action me-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'society_delete' s.id %}" class="btn-delete-action">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state-box">
+                <i class="fa-solid fa-building-circle-xmark empty-state-icon"></i>
+                <h4 class="empty-state-title">No Societies Found</h4>
+                <p class="empty-state-sub">There are currently no societies registered in the CareConnect database.</p>
+                <a href="{% url 'society_add' %}" class="btn-teal">
+                    <i class="fa-solid fa-plus"></i> Add First Society
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

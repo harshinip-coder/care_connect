@@ -1,0 +1,101 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">Volunteers</h1>
+            <p class="page-subtitle">Manage emergency volunteers and community response helpers.</p>
+        </div>
+        <div>
+            <a href="{% url 'volunteer_add' %}" class="btn-teal">
+                <i class="fa-solid fa-hand-holding-heart"></i> + Add Volunteer
+            </a>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="admin-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by name, email, phone, skills, or society..." value="{{ query|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-teal w-100 py-2 justify-content-center">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- VOLUNTEERS TABLE CARD -->
+    <div class="admin-card">
+        {% if volunteers %}
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Volunteer Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Society</th>
+                            <th>Specialization / Skills</th>
+                            <th>Availability</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in volunteers %}
+                            <tr>
+                                <td class="fw-bold text-secondary">#{{ v.id }}</td>
+                                <td>
+                                    <strong class="d-block text-dark">{{ v.first_name }} {{ v.last_name }}</strong>
+                                    <small class="text-muted">{{ v.volunteer_type }}</small>
+                                </td>
+                                <td>{{ v.email|default:"N/A" }}</td>
+                                <td>{{ v.phone|default:"N/A" }}</td>
+                                <td>{{ v.society.name|default:"Community Wide" }}</td>
+                                <td><span class="badge bg-light text-dark border px-2 py-1">{{ v.skills|default:"Emergency First Aid" }}</span></td>
+                                <td>
+                                    {% if v.availability == 'Available' %}
+                                        <span class="badge-status-active">Available</span>
+                                    {% elif v.availability == 'Busy' %}
+                                        <span class="badge-status-pending">Busy</span>
+                                    {% else %}
+                                        <span class="badge-status-inactive">Offline</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'volunteer_edit' v.id %}" class="btn-edit-action me-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'volunteer_delete' v.id %}" class="btn-delete-action">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state-box">
+                <i class="fa-solid fa-hand-holding-heart empty-state-icon"></i>
+                <h4 class="empty-state-title">No Volunteers Found</h4>
+                <p class="empty-state-sub">There are currently no registered volunteers matching your search in the database.</p>
+                <a href="{% url 'volunteer_add' %}" class="btn-teal">
+                    <i class="fa-solid fa-plus"></i> Add First Volunteer
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

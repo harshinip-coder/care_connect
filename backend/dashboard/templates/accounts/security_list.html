@@ -1,0 +1,100 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">Security Personnel</h1>
+            <p class="page-subtitle">Manage security officers, gate assignments, and duty shifts.</p>
+        </div>
+        <div>
+            <a href="{% url 'security_add' %}" class="btn-teal">
+                <i class="fa-solid fa-shield-halved"></i> + Add Security Officer
+            </a>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="admin-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by officer name, email, phone, gate location, or society..." value="{{ query|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-teal w-100 py-2 justify-content-center">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- SECURITY TABLE CARD -->
+    <div class="admin-card">
+        {% if securities %}
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Security Officer</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Society</th>
+                            <th>Gate / Block</th>
+                            <th>Shift</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in securities %}
+                            <tr>
+                                <td class="fw-bold text-secondary">#{{ s.id }}</td>
+                                <td>
+                                    <strong class="d-block text-dark">{{ s.first_name }} {{ s.last_name }}</strong>
+                                </td>
+                                <td>{{ s.phone|default:"N/A" }}</td>
+                                <td>{{ s.email|default:"N/A" }}</td>
+                                <td>{{ s.society.name|default:"Main Entrance" }}</td>
+                                <td>{{ s.gate_location|default:s.assigned_block|default:"Gate 1" }}</td>
+                                <td><span class="badge bg-light text-dark border px-2 py-1">{{ s.shift }} Shift</span></td>
+                                <td>
+                                    {% if s.status == 'On Duty' %}
+                                        <span class="badge-status-active">On Duty</span>
+                                    {% else %}
+                                        <span class="badge-status-inactive">Off Duty</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'security_edit' s.id %}" class="btn-edit-action me-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'security_delete' s.id %}" class="btn-delete-action">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state-box">
+                <i class="fa-solid fa-shield-halved empty-state-icon"></i>
+                <h4 class="empty-state-title">No Security Officers Found</h4>
+                <p class="empty-state-sub">There are currently no security officers registered in the database.</p>
+                <a href="{% url 'security_add' %}" class="btn-teal">
+                    <i class="fa-solid fa-plus"></i> Add First Officer
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

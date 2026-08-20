@@ -1,0 +1,139 @@
+<!-- SETTINGS & PREFERENCES MODAL (Matching Pic 2) -->
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow-lg" style="overflow:hidden;">
+            
+            <!-- Modal Header -->
+            <div class="modal-header border-bottom p-4" style="background:#ffffff;">
+                <div class="d-flex align-items-center gap-2">
+                    <div style="background:#00c49f1a; width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#00c49f; font-size:1.2rem;">
+                        <i class="fa-solid fa-gear"></i>
+                    </div>
+                    <h4 class="modal-title fw-extrabold m-0" id="settingsModalLabel" style="color:#0f172a; font-size:1.35rem;">
+                        Settings & Preferences
+                    </h4>
+                </div>
+                <button type="button" class="btn-close rounded-circle p-2" data-bs-dismiss="modal" aria-label="Close" style="background-color:#f1f5f9;"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body p-4" style="background:#fafafa; max-height:75vh; overflow-y:auto;">
+                
+                <!-- 1. Language Translation Tool -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff; border:1px solid #e2e8f0 !important;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-2 text-dark d-flex align-items-center gap-2" style="font-size:1.05rem;">
+                            <span style="color:#0284c7;">🌐</span> 1. Language Translation Tool
+                        </h5>
+                        <p class="text-muted small mb-3">
+                            Select your preferred native language to translate all CareConnect dashboards instantly:
+                        </p>
+
+                        <div class="d-flex flex-wrap gap-2" id="langSelectorGroup">
+                            <button type="button" class="btn lang-btn btn-outline-teal active rounded-3 px-3 py-2 fw-semibold fs-7" data-lang="en" onclick="setAppLanguage('en', this)">
+                                🇬🇧 English
+                            </button>
+                            <button type="button" class="btn lang-btn btn-outline-teal rounded-3 px-3 py-2 fw-semibold fs-7" data-lang="hi" onclick="setAppLanguage('hi', this)">
+                                🇮🇳 हिंदी (Hindi)
+                            </button>
+                            <button type="button" class="btn lang-btn btn-outline-teal rounded-3 px-3 py-2 fw-semibold fs-7" data-lang="bn" onclick="setAppLanguage('bn', this)">
+                                🇮🇳 বাংলা (Bengali)
+                            </button>
+                            <button type="button" class="btn lang-btn btn-outline-teal rounded-3 px-3 py-2 fw-semibold fs-7" data-lang="mr" onclick="setAppLanguage('mr', this)">
+                                🇮🇳 मराठी (Marathi)
+                            </button>
+                            <button type="button" class="btn lang-btn btn-outline-teal rounded-3 px-3 py-2 fw-semibold fs-7" data-lang="te" onclick="setAppLanguage('te', this)">
+                                🇮🇳 తెలుగు (Telugu)
+                            </button>
+                            <button type="button" class="btn lang-btn btn-outline-teal rounded-3 px-3 py-2 fw-semibold fs-7" data-lang="ta" onclick="setAppLanguage('ta', this)">
+                                🇮🇳 தமிழ் (Tamil)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Theme Mode -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff; border:1px solid #e2e8f0 !important;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2" style="font-size:1.05rem;">
+                            <span>🎨</span> 2. Theme Mode
+                        </h5>
+
+                        <div class="d-flex flex-wrap gap-3" id="themeSelectorGroup">
+                            <button type="button" class="btn theme-btn btn-outline-teal active rounded-3 px-4 py-2 fw-semibold fs-7" data-theme="light" onclick="setAppTheme('light', this)">
+                                ☀️ Light Mode
+                            </button>
+                            <button type="button" class="btn theme-btn btn-outline-teal rounded-3 px-4 py-2 fw-semibold fs-7" data-theme="dark" onclick="setAppTheme('dark', this)">
+                                🌙 Dark Mode
+                            </button>
+                            <button type="button" class="btn theme-btn btn-outline-teal rounded-3 px-4 py-2 fw-semibold fs-7" data-theme="system" onclick="setAppTheme('system', this)">
+                                🌓 System Default
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Accent Color -->
+                <div class="card border-0 shadow-sm rounded-4 mb-2" style="background:#ffffff; border:1px solid #e2e8f0 !important;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2" style="font-size:1.05rem;">
+                            <span>🎨</span> 3. Accent Color
+                        </h5>
+
+                        <div class="d-flex flex-wrap align-items-center gap-3" id="accentSelectorGroup">
+                            <button type="button" class="btn accent-btn btn-outline-teal rounded-3 px-3 py-2 fw-semibold fs-7 d-flex align-items-center gap-2" data-accent="#0284c7" onclick="setAppAccent('#0284c7', this)">
+                                <span style="width:14px; height:14px; border-radius:50%; background:#0284c7; display:inline-block;"></span> Blue
+                            </button>
+                            <button type="button" class="btn accent-btn btn-outline-teal active rounded-3 px-3 py-2 fw-semibold fs-7 d-flex align-items-center gap-2" data-accent="#10b981" onclick="setAppAccent('#10b981', this)">
+                                <span style="width:14px; height:14px; border-radius:50%; background:#10b981; display:inline-block;"></span> Teal
+                            </button>
+                            <button type="button" class="btn accent-btn btn-outline-teal rounded-3 px-3 py-2 fw-semibold fs-7 d-flex align-items-center gap-2" data-accent="#7c3aed" onclick="setAppAccent('#7c3aed', this)">
+                                <span style="width:14px; height:14px; border-radius:50%; background:#7c3aed; display:inline-block;"></span> Purple
+                            </button>
+                            <button type="button" class="btn accent-btn btn-outline-teal rounded-3 px-3 py-2 fw-semibold fs-7 d-flex align-items-center gap-2" data-accent="#16a34a" onclick="setAppAccent('#16a34a', this)">
+                                <span style="width:14px; height:14px; border-radius:50%; background:#16a34a; display:inline-block;"></span> Green
+                            </button>
+                            
+                            <div class="d-inline-flex align-items-center gap-2 border rounded-3 px-3 py-1 background-white">
+                                🎨 <span class="small fw-semibold text-secondary">Custom:</span>
+                                <input type="color" id="customColorPicker" value="#10b981" style="width:28px; height:28px; border:none; background:transparent; cursor:pointer;" onchange="setAppAccent(this.value, null)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer border-top p-3 d-flex justify-content-between" style="background:#ffffff;">
+                <button type="button" class="btn btn-outline-secondary fw-bold px-4 rounded-3" onclick="resetSettingsDefaults()">
+                    Reset Defaults
+                </button>
+                <button type="button" class="btn btn-dark fw-bold px-4 rounded-3 d-flex align-items-center gap-2" style="background:#0f172a; border:none;" onclick="saveSettingsPreferences()">
+                    <i class="fa-solid fa-lock"></i> Save Changes
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-outline-teal {
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+.btn-outline-teal:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #94a3b8;
+}
+.btn-outline-teal.active {
+    background: #ecfdf5 !important;
+    color: #059669 !important;
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+</style>

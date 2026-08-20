@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Member Dashboard | CareConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+    <style>
+        .society-hero-card { background: #ffffff; border-radius: 24px; padding: 28px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
+        .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .metric-card { background: #ffffff; border-radius: 18px; padding: 20px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px; }
+        .metric-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.2rem; }
+        .mgmt-toolbar { background: #ffffff; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
+        .btn-mgmt-item { border: 1px solid #0284c7; color: #0284c7; background: #f0f9ff; padding: 10px 20px; border-radius: 12px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: all 0.2s ease; }
+        .btn-mgmt-item:hover { background: #0284c7; color: #ffffff; }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
+            <h2>CareConnect</h2>
+        </div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/society_member/society_member.html" class="nav-item active"><i class="fa-solid fa-table-cells-large nav-icon"></i><span>Dashboard</span></a>
+            <a href="/dashboard/society_member/profile.html" class="nav-item"><i class="fa-regular fa-user nav-icon"></i><span>Profile</span></a>
+            <a href="/dashboard/society_member/residents.html" class="nav-item"><i class="fa-solid fa-users nav-icon"></i><span>Residents</span></a>
+            <a href="/dashboard/society_member/guardians.html" class="nav-item"><i class="fa-solid fa-user-shield nav-icon"></i><span>Guardians</span></a>
+            <a href="/dashboard/society_member/society.html" class="nav-item"><i class="fa-solid fa-building nav-icon"></i><span>Society</span></a>
+            <a href="/dashboard/society_member/blocks.html" class="nav-item"><i class="fa-solid fa-cubes nav-icon"></i><span>Blocks</span></a>
+            <a href="/dashboard/society_member/flats.html" class="nav-item"><i class="fa-solid fa-door-closed nav-icon"></i><span>Flats</span></a>
+            <a href="/dashboard/society_member/security.html" class="nav-item"><i class="fa-solid fa-shield-halved nav-icon"></i><span>Security</span></a>
+            <a href="/dashboard/society_member/volunteers.html" class="nav-item"><i class="fa-solid fa-hand-holding-heart nav-icon"></i><span>Volunteers</span></a>
+            <a href="/dashboard/society_member/emergency.html" class="nav-item nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span>Emergency Alerts</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn" aria-label="Toggle Sidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="topbar-search-box">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                    <input type="text" placeholder="Search society resources...">
+                </div>
+            </div>
+            <div class="topbar-right">
+                <!-- NOTIFICATION BELL -->
+                <button type="button" class="notification-btn" id="notifBtn" onclick="toggleSocietyMemberNotificationPopover(event)" aria-label="Open notifications" style="position:relative; background:none; border:none; font-size:1.2rem; color:#64748b; margin-right:16px; cursor:pointer;">
+                    <i class="fa-regular fa-bell"></i>
+                    <span id="notifBadge" class="badge-pill" style="position:absolute; top:-4px; right:-6px; background:#ef4444; color:#fff; font-size:0.65rem; font-weight:800; padding:2px 6px; border-radius:10px; display:none;"></span>
+                </button>
+
+                <!-- SETTINGS GEAR -->
+                <button type="button" class="settings-gear-btn" onclick="if(typeof openSettingsModal==='function') openSettingsModal();" aria-label="Open settings" style="background:none; border:none; font-size:1.2rem; color:#64748b; margin-right:16px; cursor:pointer;">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+
+                <!-- USER AVATAR & INFO (CLICK OPENS PROFILE) -->
+                <div class="topbar-user-pill" onclick="window.location.href='/dashboard/society_member/profile.html'" style="display:flex; align-items:center; gap:10px; margin-right:16px; cursor:pointer;" title="Click to view Profile">
+                    <img src="https://ui-avatars.com/api/?name=Society+Member&background=10b981&color=fff&bold=true" alt="Avatar" id="userAvatarImg" class="topbar-user-avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid #10b981;">
+                    <div class="topbar-user-info" style="display:flex; flex-direction:column;">
+                        <strong id="topbarUserName" style="font-size:0.9rem; color:#0f172a;">Society Member</strong>
+                        <span id="topbarUserRole" style="font-size:0.75rem; color:#64748b;">Society Member</span>
+                    </div>
+                </div>
+                <button type="button" class="banner-btn btn-dark" onclick="handleLogout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <!-- DYNAMIC LIVE EMERGENCY ALERT BANNER -->
+            <div id="liveSosStatusBanner" style="display:none; background:#fff5f5; border:2px solid #ef4444; border-radius:20px; padding:20px; margin-bottom:24px;"></div>
+
+            <!-- SOCIETY MEMBER HERO BANNER -->
+            <div class="society-hero-card">
+                <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+                    <div>
+                        <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a; margin:0;" id="welcomeHeaderTitle">Welcome back, <span id="welcomeUserName">Society Member</span> 👋</h2>
+                        <p style="font-size:0.875rem; color:#64748b; margin:4px 0 0;">Society Governance & Emergency Broadcast Portal</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOCIETY MANAGEMENT SHORTCUTS -->
+            <div class="mgmt-toolbar">
+                <h3 style="font-size:1.1rem; font-weight:800; color:#0f172a; margin-bottom:14px;">Society Management Shortcuts</h3>
+                <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                    <a href="/dashboard/society_member/blocks.html" class="btn-mgmt-item"><i class="fa-solid fa-cubes"></i> [ Blocks ]</a>
+                    <a href="/dashboard/society_member/flats.html" class="btn-mgmt-item"><i class="fa-solid fa-door-closed"></i> [ Flats ]</a>
+                    <a href="/dashboard/society_member/security.html" class="btn-mgmt-item"><i class="fa-solid fa-shield-halved"></i> [ Security ]</a>
+                    <a href="/dashboard/society_member/volunteers.html" class="btn-mgmt-item"><i class="fa-solid fa-hand-holding-heart"></i> [ Volunteers ]</a>
+                </div>
+            </div>
+
+            <!-- ACTIVE EMERGENCY NOTIFICATIONS PANEL -->
+            <div style="background:#ffffff; border-radius:24px; padding:24px; border:1px solid #e2e8f0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a; margin:0;">Active Emergency Notifications</h3>
+                    <a href="/dashboard/society_member/emergency.html" style="font-size:0.85rem; color:#0284c7; font-weight:700; text-decoration:none;">View Full Incident Center &rarr;</a>
+                </div>
+                <div id="emergencyNotificationsList">
+                    <div style="color:#64748b; font-size:0.9rem; padding:16px 0;">No active emergency calls right now.</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- NOTIFICATION POPOVER -->
+<div id="societyNotifPopover" style="display:none; position:fixed; top:70px; right:20px; width:340px; background:#ffffff; border-radius:18px; box-shadow:0 16px 40px rgba(0,0,0,0.12); border:1px solid #e2e8f0; z-index:99999; padding:16px;">
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/emergency-manager.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script>
+let globalSocietyNotifications = [];
+
+async function fetchSocietyNotifications() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/emergency/notifications/`, { credentials: "include" });
+        if (!res.ok) return;
+        const data = await res.json();
+        const notifs = data.notifications || data.unread_notifications || [];
+        globalSocietyNotifications = notifs;
+
+        const badge = document.getElementById("notifBadge");
+        if (badge) {
+            if (notifs.length > 0) {
+                badge.textContent = notifs.length;
+                badge.style.display = "inline-block";
+            } else {
+                badge.style.display = "none";
+            }
+        }
+    } catch (e) {
+        console.warn("Notifications fetch warning:", e);
+    }
+}
+
+function toggleSocietyMemberNotificationPopover(event) {
+    if (event) event.stopPropagation();
+    const popover = document.getElementById("societyNotifPopover");
+    if (!popover) return;
+
+    if (popover.style.display === "block") {
+        popover.style.display = "none";
+        return;
+    }
+
+    let html = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+            <h4 style="margin:0; font-size:0.95rem; font-weight:800; color:#0f172a;"><i class="fa-solid fa-bell text-teal me-2"></i>Notifications</h4>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:0.75rem; color:#64748b; font-weight:700;">${globalSocietyNotifications.length} Total</span>
+                ${globalSocietyNotifications.length > 0 ? `<span onclick="markSocietyNotificationsRead()" style="font-size:0.75rem; color:#0284c7; font-weight:700; cursor:pointer; text-decoration:underline;">Mark all read</span>` : ''}
+            </div>
+        </div>
+    `;
+
+    if (!globalSocietyNotifications || globalSocietyNotifications.length === 0) {
+        html += `
+            <div style="text-align:center; padding:24px 12px; color:#64748b; background:#f8fafc; border-radius:14px; border:1px dashed #cbd5e1;">
+                <i class="fa-regular fa-bell-slash" style="font-size:1.8rem; color:#94a3b8; margin-bottom:6px; display:block;"></i>
+                <strong style="font-size:0.85rem; color:#334155; display:block;">No Notifications</strong>
+                <span style="font-size:0.75rem; color:#94a3b8;">You are all caught up!</span>
+            </div>
+        `;
+    } else {
+        html += `<div style="max-height:280px; overflow-y:auto;">`;
+        globalSocietyNotifications.forEach(n => {
+            html += `
+                <div style="padding:10px; border-bottom:1px solid #f1f5f9; font-size:0.82rem;">
+                    <strong style="color:#0f172a; display:block;">${n.title || 'Emergency Notification'}</strong>
+                    <span style="color:#64748b; display:block;">${n.message || n.text || ''}</span>
+                    <span style="font-size:0.7rem; color:#94a3b8; margin-top:2px; display:block;">${n.created_at || ''}</span>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    }
+
+    popover.innerHTML = html;
+    popover.style.display = "block";
+
+    const closeHandler = (evt) => {
+        if (!popover.contains(evt.target) && !evt.target.closest("#notifBtn, .notification-btn")) {
+            popover.style.display = "none";
+            document.removeEventListener("click", closeHandler);
+        }
+    };
+    setTimeout(() => document.addEventListener("click", closeHandler), 10);
+}
+
+async function markSocietyNotificationsRead() {
+    try {
+        await fetch(`${API_BASE_URL}/api/notifications/mark-all-read/`, {
+            method: "POST",
+            credentials: "include"
+        });
+    } catch (e) {}
+    globalSocietyNotifications = [];
+    const badge = document.getElementById("notifBadge");
+    if (badge) {
+        badge.textContent = "0";
+        badge.style.display = "none";
+    }
+    const popover = document.getElementById("societyNotifPopover");
+    if (popover) {
+        popover.style.display = "none";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    verifySessionAndRole("society_member");
+    fetchSocietyNotifications();
+    setInterval(fetchSocietyNotifications, 10000);
+});
+</script>
+</body>
+</html>

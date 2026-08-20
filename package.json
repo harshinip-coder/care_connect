@@ -1,0 +1,16 @@
+{
+  "name": "careconnect-root",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently -k -n \"BACKEND,FRONTEND\" -c \"cyan,magenta\" \"venv\\Scripts\\python.exe manage.py runserver 0.0.0.0:8000\" \"npm --prefix frontend run dev\"",
+    "start": "npm run dev",
+    "backend": "venv\\Scripts\\python.exe manage.py runserver 0.0.0.0:8000",
+    "frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.4"
+  }
+}

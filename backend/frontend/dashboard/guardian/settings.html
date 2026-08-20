@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardian Settings | CareConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand"><img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"><h2>CareConnect</h2></div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/guardian/guardian.html" class="nav-item"><i class="fa-solid fa-table-cells-large nav-icon"></i><span data-i18n="dashboard">Dashboard</span></a>
+            <a href="/dashboard/guardian/profile.html" class="nav-item"><i class="fa-regular fa-user nav-icon"></i><span data-i18n="nav_profile">Profile</span></a>
+            <a href="/dashboard/guardian/guardians.html" class="nav-item"><i class="fa-solid fa-user-shield nav-icon"></i><span data-i18n="nav_residents">My Residents</span></a>
+            <a href="/dashboard/guardian/emergency.html" class="nav-item nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span data-i18n="emergency_alerts">Emergency Alerts</span></a>
+            <a href="/dashboard/guardian/settings.html" class="nav-item active"><i class="fa-solid fa-gear nav-icon"></i><span data-i18n="settings">Settings</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn" aria-label="Toggle Sidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="topbar-search-box">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                    <input type="text" id="topbarSearchInput" placeholder="Search settings..." data-i18n-placeholder="search_placeholder">
+                </div>
+            </div>
+            <div class="topbar-right">
+                <!-- NOTIFICATION BELL -->
+                <button type="button" class="notification-btn" id="notifBtn" onclick="toggleGuardianNotificationPopover(event)" aria-label="Open notifications" style="position:relative; background:none; border:none; font-size:1.2rem; color:#64748b; margin-right:16px; cursor:pointer;">
+                    <i class="fa-regular fa-bell"></i>
+                    <span id="notifBadge" class="badge-pill" style="position:absolute; top:-4px; right:-6px; background:#ef4444; color:#fff; font-size:0.65rem; font-weight:800; padding:2px 6px; border-radius:10px; display:none;"></span>
+                </button>
+
+                <!-- SETTINGS GEAR -->
+                <button type="button" class="settings-gear-btn" onclick="if(typeof openSettingsModal==='function') openSettingsModal();" aria-label="Open settings" style="background:none; border:none; font-size:1.2rem; color:#64748b; margin-right:20px; cursor:pointer;">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+
+                <!-- USER AVATAR & INFO -->
+                <div class="topbar-user-pill" style="display:flex; align-items:center; gap:10px; margin-right:16px;">
+                    <img src="https://ui-avatars.com/api/?name=Guardian&background=0284c7&color=fff&bold=true" alt="Avatar" id="userAvatarImg" class="topbar-user-avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid #0284c7;">
+                    <div class="topbar-user-info" style="display:flex; flex-direction:column;">
+                        <strong id="topbarUserName" style="font-size:0.9rem; color:#0f172a;">Guardian</strong>
+                        <span id="topbarUserRole" style="font-size:0.75rem; color:#64748b;">Guardian</span>
+                    </div>
+                </div>
+                <button type="button" class="banner-btn btn-dark" onclick="handleLogout()" data-i18n="logout">Logout</button>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <div style="background:#ffffff; border-radius:24px; padding:32px; border:1px solid #e2e8f0; max-width:680px;">
+                <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a; margin-bottom:20px;" data-i18n="settings">Guardian Settings & Preferences</h2>
+                
+                <div style="margin-bottom:24px;">
+                    <label style="font-weight:700; color:#475569; display:block; margin-bottom:8px;">Language Preference</label>
+                    <select class="topbar-lang-select" id="settingDashboardLangSelect" onchange="if(typeof translatePage==='function') translatePage(this.value);" style="width:100%; padding:10px 14px; border-radius:12px; border:1px solid #cbd5e1; font-weight:600;">
+                        <option value="en">🇬🇧 English</option>
+                        <option value="hi">🇮🇳 हिंदी (Hindi)</option>
+                        <option value="bn">🇮🇳 বাংলা (Bengali)</option>
+                        <option value="mr">🇮🇳 मराठी (Marathi)</option>
+                        <option value="te">🇮🇳 తెలుగు (Telugu)</option>
+                        <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:24px;">
+                    <label style="font-weight:700; color:#475569; display:block; margin-bottom:8px;">Emergency Alert Notification Ringtone</label>
+                    <select class="form-control" style="width:100%; padding:10px 14px; border-radius:12px; border:1px solid #cbd5e1;">
+                        <option>Loud Emergency Siren (Recommended)</option>
+                        <option>Standard Priority Chime</option>
+                        <option>Vibrate Only</option>
+                    </select>
+                </div>
+
+                <button type="button" class="banner-btn btn-teal" onclick="if(typeof openSettingsModal==='function') openSettingsModal(); else alert('Settings saved successfully!');" style="width:100%; padding:12px;">Open Full Customization Panel</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script src="/js/guardian-manager.js"></script>
+</body>
+</html>

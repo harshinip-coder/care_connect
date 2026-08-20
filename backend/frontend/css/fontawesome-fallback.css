@@ -1,0 +1,35 @@
+/* =========================================================
+   CARECONNECT — FONTAWESOME RESILIENCE & FALLBACK STYLES
+   Ensures icons always render reliably online & offline
+   ========================================================= */
+
+/* Fallback base formatting */
+i.fa-solid, i.fa-regular, i.fa-brands,
+.fa-solid, .fa-regular, .fa-brands {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    min-width: 1em;
+    min-height: 1em;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Base icon SVG mask fallbacks if font fail to load */
+@supports not (font-family: 'Font Awesome 6 Free') {
+    .fa-user::before { content: "👤"; }
+    .fa-lock::before { content: "🔒"; }
+    .fa-eye::before { content: "👁️"; }
+    .fa-eye-slash::before { content: "🙈"; }
+    .fa-shield-halved::before { content: "🛡️"; }
+    .fa-users::before { content: "👥"; }
+    .fa-bell::before { content: "🔔"; }
+    .fa-calendar::before { content: "📅"; }
+    .fa-phone::before { content: "📞"; }
+    .fa-droplet::before { content: "💧"; }
+    .fa-user-plus::before { content: "➕"; }
+    .fa-chevron-down::before { content: "▾"; }
+    .fa-envelope::before { content: "✉️"; }
+}

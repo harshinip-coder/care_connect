@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | CareConnect Society Member</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
+            <h2>CareConnect</h2>
+        </div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/society_member/society_member.html" class="nav-item"><i class="fa-solid fa-table-cells-large nav-icon"></i><span>Dashboard</span></a>
+            <a href="/dashboard/society_member/profile.html" class="nav-item"><i class="fa-regular fa-user nav-icon"></i><span>Profile</span></a>
+            <a href="/dashboard/society_member/residents.html" class="nav-item"><i class="fa-solid fa-users nav-icon"></i><span>Residents</span></a>
+            <a href="/dashboard/society_member/guardians.html" class="nav-item"><i class="fa-solid fa-user-shield nav-icon"></i><span>Guardians</span></a>
+            <a href="/dashboard/society_member/society.html" class="nav-item"><i class="fa-solid fa-building nav-icon"></i><span>Society</span></a>
+            <a href="/dashboard/society_member/blocks.html" class="nav-item"><i class="fa-solid fa-cubes nav-icon"></i><span>Blocks</span></a>
+            <a href="/dashboard/society_member/flats.html" class="nav-item"><i class="fa-solid fa-door-closed nav-icon"></i><span>Flats</span></a>
+            <a href="/dashboard/society_member/security.html" class="nav-item"><i class="fa-solid fa-shield-halved nav-icon"></i><span>Security</span></a>
+            <a href="/dashboard/society_member/volunteers.html" class="nav-item"><i class="fa-solid fa-hand-holding-heart nav-icon"></i><span>Volunteers</span></a>
+            <a href="/dashboard/society_member/emergency.html" class="nav-item nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span>Emergency Alerts</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+            </div>
+            <div class="topbar-right">
+                <a href="/dashboard/society_member/society_member.html" class="banner-btn btn-dark"><i class="fa-solid fa-house me-1"></i> Dashboard</a>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <div style="margin-bottom:24px;">
+                <h1 style="font-size:1.6rem; font-weight:800; color:#0f172a; margin:0;">Account & System Settings</h1>
+                <p style="font-size:0.875rem; color:#64748b; margin-top:4px;">Manage language, display theme, sound notifications, and preferences.</p>
+            </div>
+
+            <div style="background:#ffffff; border-radius:24px; padding:28px; border:1px solid #e2e8f0; max-width:600px;">
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; font-weight:700; color:#0f172a; margin-bottom:8px;">Language Preference</label>
+                    <select id="languageSelect" class="form-control" style="width:100%; padding:10px 14px; border-radius:12px; border:1px solid #cbd5e1;" onchange="if(typeof changeLanguage==='function') changeLanguage(this.value)">
+                        <option value="en">English</option>
+                        <option value="ta">Tamil (தமிழ்)</option>
+                        <option value="hi">Hindi (हिन्दी)</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; font-weight:700; color:#0f172a; margin-bottom:8px;">Audio Alert on Emergency</label>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <input type="checkbox" id="audioAlertsCheckbox" checked style="width:18px; height:18px;">
+                        <span style="font-size:0.9rem; color:#334155;">Play sound notification when SOS alert is triggered</span>
+                    </div>
+                </div>
+
+                <button type="button" class="banner-btn btn-teal" onclick="if(typeof openSettingsModal==='function') openSettingsModal(); else alert('Preferences saved!')"><i class="fa-solid fa-sliders me-1"></i> Open Advanced Preferences</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    verifySessionAndRole("society_member");
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">Flats Management</h1>
+            <p class="page-subtitle">Manage individual flats, block assignments, and resident occupancy.</p>
+        </div>
+        <div>
+            <a href="{% url 'flat_add' %}" class="btn-teal">
+                <i class="fa-solid fa-door-closed"></i> + Add Flat
+            </a>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="admin-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by flat number, block name, or society..." value="{{ query|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-teal w-100 py-2 justify-content-center">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- FLATS TABLE CARD -->
+    <div class="admin-card">
+        {% if flats %}
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Flat Number</th>
+                            <th>Floor</th>
+                            <th>Block Name</th>
+                            <th>Society Name</th>
+                            <th>Status</th>
+                            <th>Assigned Residents</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in flats %}
+                            <tr>
+                                <td class="fw-bold text-secondary">#{{ f.id }}</td>
+                                <td>
+                                    <strong class="d-block text-dark fs-6">{{ f.flat_number }}</strong>
+                                </td>
+                                <td>Floor {{ f.floor }}</td>
+                                <td>{{ f.block.block_name|default:"N/A" }}</td>
+                                <td>{{ f.block.society.name|default:"N/A" }}</td>
+                                <td>
+                                    {% if f.occupied %}
+                                        <span class="badge-status-active">Occupied</span>
+                                    {% else %}
+                                        <span class="badge-status-inactive">Vacant</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% for r in f.residents.all %}
+                                        <span class="badge bg-light text-dark border me-1">{{ r.get_full_name|default:r.username }}</span>
+                                    {% empty %}
+                                        <span class="text-muted small">None</span>
+                                    {% endfor %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'flat_edit' f.id %}" class="btn-edit-action me-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'flat_delete' f.id %}" class="btn-delete-action">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state-box">
+                <i class="fa-solid fa-door-open empty-state-icon"></i>
+                <h4 class="empty-state-title">No Flats Found</h4>
+                <p class="empty-state-sub">There are currently no flats registered in the CareConnect database.</p>
+                <a href="{% url 'flat_add' %}" class="btn-teal">
+                    <i class="fa-solid fa-plus"></i> Add First Flat
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

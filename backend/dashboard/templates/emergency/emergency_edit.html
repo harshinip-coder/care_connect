@@ -1,0 +1,42 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">Edit Emergency Alert</h1>
+            <p class="page-subtitle">Update status and responder assignments for Incident #SOS-{{ emergency.id }}.</p>
+        </div>
+        <div>
+            <a href="{% url 'emergency_list' %}" class="btn btn-outline-secondary rounded-3 px-3 fw-bold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Emergency List
+            </a>
+        </div>
+    </div>
+
+    <div class="admin-card max-width-800 mx-auto">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                {% for field in form %}
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label fw-bold text-dark small mb-1">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mt-4 pt-3 border-top d-flex gap-2">
+                <button type="submit" class="btn-teal">
+                    <i class="fa-solid fa-save me-1"></i> Update Emergency Alert
+                </button>
+                <a href="{% url 'emergency_list' %}" class="btn btn-light rounded-3 px-4 fw-bold text-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

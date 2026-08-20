@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Dashboard | CareConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+    <style>
+        /* 3D REALISTIC STUNNING SOS BUTTON ENHANCEMENT */
+        .sos-center-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 28px 24px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sos-button-wrapper {
+            position: relative;
+            width: 190px;
+            height: 190px;
+            margin: 12px 0 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sos-pulse-ring {
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            animation: sosPulse 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+            pointer-events: none;
+        }
+
+        .sos-pulse-ring:nth-child(2) { animation-delay: 0.8s; }
+        .sos-pulse-ring:nth-child(3) { animation-delay: 1.6s; }
+
+        @keyframes sosPulse {
+            0% { transform: scale(0.82); opacity: 0.9; }
+            100% { transform: scale(1.35); opacity: 0; }
+        }
+
+        .sos-main-button {
+            position: relative;
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #ff5252 0%, #dc2626 55%, #991b1b 100%);
+            box-shadow: 0 16px 36px rgba(220, 38, 38, 0.45), 
+                        inset 0 4px 8px rgba(255, 255, 255, 0.4), 
+                        inset 0 -6px 12px rgba(0, 0, 0, 0.5), 
+                        0 0 0 8px rgba(254, 226, 226, 0.8);
+            border: 6px solid #ffffff;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+            z-index: 2;
+            padding: 10px;
+        }
+
+        .sos-main-button:hover {
+            transform: scale(1.06);
+            box-shadow: 0 20px 45px rgba(220, 38, 38, 0.6), 
+                        inset 0 5px 10px rgba(255, 255, 255, 0.5), 
+                        inset 0 -6px 12px rgba(0, 0, 0, 0.5), 
+                        0 0 0 10px rgba(254, 226, 226, 0.9);
+        }
+
+        .sos-main-button:active {
+            transform: scale(0.94);
+            box-shadow: 0 6px 18px rgba(220, 38, 38, 0.4), 
+                        inset 0 3px 6px rgba(0, 0, 0, 0.6), 
+                        0 0 0 4px rgba(254, 226, 226, 0.5);
+        }
+
+        .sos-btn-icon {
+            font-size: 1.8rem;
+            margin-bottom: 2px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .sos-btn-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            line-height: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .sos-btn-subtitle {
+            font-size: 0.65rem;
+            font-weight: 800;
+            opacity: 0.95;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .topbar-icon-wrapper {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
+            <h2>CareConnect</h2>
+        </div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/resident/resident.html" class="nav-item active">
+                <i class="fa-solid fa-table-cells-large nav-icon"></i>
+                <span data-i18n="nav_dashboard">Dashboard</span>
+            </a>
+            <a href="/dashboard/resident/profile.html" class="nav-item">
+                <i class="fa-regular fa-user nav-icon"></i>
+                <span data-i18n="nav_profile">Profile</span>
+            </a>
+            <a href="/dashboard/resident/guardians.html" class="nav-item">
+                <i class="fa-solid fa-user-shield nav-icon"></i>
+                <span data-i18n="nav_guardians">Guardians</span>
+            </a>
+            <a href="/dashboard/resident/society.html" class="nav-item">
+                <i class="fa-solid fa-building nav-icon"></i>
+                <span data-i18n="nav_society">Society</span>
+            </a>
+            <a href="/dashboard/resident/emergency.html" class="nav-item nav-emergency">
+                <i class="fa-solid fa-bell nav-icon text-red"></i>
+                <span data-i18n="nav_emergency">Emergency Alert</span>
+            </a>
+        </nav>
+        <div class="sidebar-bottom-banner">
+            <div class="banner-illustration"><i class="fa-solid fa-people-roof"></i></div>
+            <p data-i18n="sidebar_banner_title">Together, we build a safer community.</p>
+            <span data-i18n="sidebar_banner_sub">Care today, Connected always.</span>
+        </div>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+                <div class="topbar-search-box">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                    <input type="text" id="dashboardSearch" placeholder="Search anything..." autocomplete="off">
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-icon-wrapper">
+                    <button type="button" class="topbar-icon-btn" id="notificationBtn" onclick="toggleNotificationsPopover(event)">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge" id="notificationCount">0</span>
+                    </button>
+                </div>
+                <button type="button" class="topbar-icon-btn" id="settingsButton" title="Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+                <div class="topbar-user-pill" onclick="window.location.href='/dashboard/resident/profile.html'">
+                    <img src="/images/avatar-default.png" alt="Avatar" id="userAvatarImg" class="topbar-user-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Resident&background=10b981&color=fff'">
+                    <div class="topbar-user-info">
+                        <strong id="topbarUserName">Resident</strong>
+                        <span id="topbarUserRole">Resident</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <!-- WELCOME HEADER -->
+            <div class="welcome-card">
+                <div class="welcome-text-box">
+                    <h1 id="welcomeHeaderTitle">Welcome back, <span id="welcomeUserName">Resident</span> 👋</h1>
+                    <p data-i18n="welcome_sub">Glad to see you again! Stay safe, stay connected.</p>
+                </div>
+                <div class="datetime-card">
+                    <i class="fa-regular fa-calendar-check datetime-icon"></i>
+                    <div class="datetime-info">
+                        <strong id="currentDate">Monday, August 10, 2026</strong>
+                        <span id="currentTime">6:08 PM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIVE EMERGENCY MONITOR BANNER -->
+            <div id="liveSosStatusBanner" style="display:none; background:#fff5f5; border:2px solid #ef4444; border-radius:20px; padding:20px; margin-bottom:24px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="background:#ef4444; color:#fff; font-weight:800; padding:4px 12px; border-radius:20px; font-size:0.8rem;">🚨 EMERGENCY ACTIVE</span>
+                            <strong style="font-size:1.1rem; color:#0f172a;" id="liveSosStatusText">ACTIVE</strong>
+                        </div>
+                        <p style="font-size:0.875rem; color:#64748b; margin:6px 0 0;" id="liveSosResponderText">Active Escalation Stage: Primary Guardian</p>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-weight:700; color:#dc2626; font-size:0.9rem;" id="liveSosTimerText">Stage Timeout: 10s</span>
+                        <button type="button" class="banner-btn btn-teal" onclick="triggerOneTapSOS()">Edit Details</button>
+                        <button type="button" class="banner-btn btn-dark" style="background:#dc2626;" onclick="cancelActiveSOS()">Cancel SOS</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3-COLUMN HERO GRID MATCHING MOCKUP -->
+            <div class="hero-three-column-grid">
+                <!-- 1. QUICK ACTIONS CARD -->
+                <div class="quick-actions-card">
+                    <div class="card-title-header">
+                        <h3 data-i18n="quick_actions">Quick Actions</h3>
+                    </div>
+                    <div class="actions-list">
+                        <a href="/dashboard/resident/guardians.html" class="action-row-btn">
+                            <div class="action-btn-icon-box bg-purple-light"><i class="fa-solid fa-user-shield"></i></div>
+                            <span class="action-label">Add Guardian</span>
+                            <i class="fa-solid fa-chevron-right text-muted"></i>
+                        </a>
+                        <a href="/dashboard/resident/society.html" class="action-row-btn">
+                            <div class="action-btn-icon-box bg-green-light"><i class="fa-solid fa-building"></i></div>
+                            <span class="action-label">Society</span>
+                            <i class="fa-solid fa-chevron-right text-muted"></i>
+                        </a>
+                        <a href="/dashboard/resident/emergency.html" class="action-row-btn">
+                            <div class="action-btn-icon-box bg-red-light"><i class="fa-solid fa-bullhorn"></i></div>
+                            <span class="action-label">Emergency Alert</span>
+                            <i class="fa-solid fa-chevron-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. REALISTIC 3D SOS CENTER CARD -->
+                <div class="sos-center-card">
+                    <div class="sos-button-wrapper">
+                        <div class="sos-pulse-ring"></div>
+                        <div class="sos-pulse-ring"></div>
+                        <div class="sos-pulse-ring"></div>
+                        <button type="button" class="sos-main-button" id="mainSosButton" onclick="triggerOneTapSOS()">
+                            <i class="fa-solid fa-bell-concierge sos-btn-icon"></i>
+                            <span class="sos-btn-title">SOS</span>
+                            <span class="sos-btn-subtitle" data-i18n="sos_subtitle">EMERGENCY HELP</span>
+                        </button>
+                    </div>
+                    <p class="sos-instruction-text" data-i18n="sos_instruction">1-Tap SOS to send instant alert to your emergency contacts</p>
+                </div>
+
+                <!-- 3. RECENT ALERTS FEED CARD -->
+                <div class="recent-alerts-card">
+                    <div class="card-title-header">
+                        <h3 data-i18n="recent_alerts">Recent Alerts</h3>
+                        <a href="/dashboard/resident/emergency.html" class="view-all-link" data-i18n="view_all">View All →</a>
+                    </div>
+                    <div class="alerts-feed-list" id="recentAlertsList">
+                        <div class="alert-feed-item">
+                            <div class="alert-feed-icon bg-red-light"><i class="fa-solid fa-heart-pulse"></i></div>
+                            <div class="alert-feed-info">
+                                <strong>Medical Emergency</strong>
+                                <span>Block A, Flat 101</span>
+                            </div>
+                            <span class="status-pill status-active">Active</span>
+                        </div>
+                        <div class="alert-feed-item">
+                            <div class="alert-feed-icon bg-blue-light"><i class="fa-solid fa-shield-cat"></i></div>
+                            <div class="alert-feed-info">
+                                <strong>Security Alert</strong>
+                                <span>Main Gate</span>
+                            </div>
+                            <span class="status-pill status-resolved">Resolved</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OUR COMMUNITY AT A GLANCE (5 STAT CARDS) -->
+            <div class="community-glance-section">
+                <div class="section-title">
+                    <h2 data-i18n="our_community">Our Community at a Glance</h2>
+                </div>
+                <div class="glance-five-grid">
+                    <div class="glance-card">
+                        <div class="glance-card-top">
+                            <div class="glance-icon-box bg-green-light"><i class="fa-solid fa-users"></i></div>
+                            <div>
+                                <div class="glance-number" id="residentCount">--</div>
+                                <div class="glance-lbl" data-i18n="residents">Residents</div>
+                            </div>
+                        </div>
+                        <a href="/dashboard/resident/society.html" class="glance-link">View Society →</a>
+                    </div>
+                    <div class="glance-card">
+                        <div class="glance-card-top">
+                            <div class="glance-icon-box bg-purple-light"><i class="fa-solid fa-user-shield"></i></div>
+                            <div>
+                                <div class="glance-number" id="guardianCount">--</div>
+                                <div class="glance-lbl" data-i18n="guardians">Guardians</div>
+                            </div>
+                        </div>
+                        <a href="/dashboard/resident/guardians.html" class="glance-link">View Guardians →</a>
+                    </div>
+                    <div class="glance-card">
+                        <div class="glance-card-top">
+                            <div class="glance-icon-box bg-orange-light"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                            <div>
+                                <div class="glance-number" id="volunteerCount">--</div>
+                                <div class="glance-lbl" data-i18n="volunteers">Volunteers</div>
+                            </div>
+                        </div>
+                        <a href="/dashboard/resident/society.html" class="glance-link">View Community →</a>
+                    </div>
+                    <div class="glance-card">
+                        <div class="glance-card-top">
+                            <div class="glance-icon-box bg-blue-light"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div>
+                                <div class="glance-number" id="securityCount">--</div>
+                                <div class="glance-lbl" data-i18n="security">Security Personnel</div>
+                            </div>
+                        </div>
+                        <a href="/dashboard/resident/society.html" class="glance-link">View Security →</a>
+                    </div>
+                    <div class="glance-card">
+                        <div class="glance-card-top">
+                            <div class="glance-icon-box bg-red-light"><i class="fa-solid fa-bell"></i></div>
+                            <div>
+                                <div class="glance-number" id="activeAlertCount">--</div>
+                                <div class="glance-lbl" data-i18n="active_alerts">Active Alerts</div>
+                            </div>
+                        </div>
+                        <a href="/dashboard/resident/emergency.html" class="glance-link">View Alerts →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM ACTION BANNERS -->
+            <div class="bottom-banners-grid">
+                <div class="bottom-banner-card" style="background:#e6fffa; border-color:#b2f5ea;">
+                    <div class="banner-info">
+                        <h3 data-i18n="stay_prepared">Stay Prepared, Stay Safe</h3>
+                        <p data-i18n="stay_prepared_sub">Make sure your profile and emergency contacts are up to date.</p>
+                    </div>
+                    <a href="/dashboard/resident/profile.html" class="banner-btn btn-teal" data-i18n="update_profile">Update Profile</a>
+                </div>
+                <div class="bottom-banner-card" style="background:#e0f2fe; border-color:#bae6fd;">
+                    <div class="banner-info">
+                        <h3 data-i18n="emergency_question">Emergency?</h3>
+                        <p data-i18n="emergency_sub">Press the SOS button to instantly alert your community and contacts.</p>
+                    </div>
+                    <a href="/dashboard/resident/emergency.html" class="banner-btn btn-dark" data-i18n="learn_more">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/emergency-manager.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script src="/js/resident-dashboard.js"></script>
+</body>
+</html>

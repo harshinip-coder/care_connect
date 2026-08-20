@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="400" height="250">
+  <defs>
+    <linearGradient id="regSkyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#051838" />
+      <stop offset="100%" stop-color="#0a2c5a" />
+    </linearGradient>
+    <linearGradient id="blueShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0066ff" />
+      <stop offset="100%" stop-color="#00d2b3" />
+    </linearGradient>
+    <filter id="regGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Night Sky & Neighborhood BG -->
+  <rect width="400" height="250" rx="16" fill="url(#regSkyGrad)" />
+  
+  <!-- Buildings Background -->
+  <rect x="25" y="100" width="50" height="110" fill="#072044" />
+  <rect x="35" y="115" width="10" height="14" fill="#ffcc00" opacity="0.8" />
+  <rect x="55" y="135" width="10" height="14" fill="#ffffff" opacity="0.7" />
+
+  <rect x="85" y="80" width="65" height="130" fill="#092852" />
+  <rect x="98" y="95" width="12" height="16" fill="#ffcc00" opacity="0.9" />
+  <rect x="125" y="125" width="12" height="16" fill="#ffcc00" opacity="0.8" />
+
+  <rect x="250" y="85" width="60" height="125" fill="#092852" />
+  <rect x="265" y="100" width="12" height="16" fill="#ffcc00" opacity="0.8" />
+  <rect x="288" y="130" width="12" height="16" fill="#ffffff" opacity="0.7" />
+
+  <rect x="320" y="105" width="55" height="105" fill="#072044" />
+  <rect x="335" y="120" width="10" height="14" fill="#ffcc00" opacity="0.9" />
+
+  <!-- Ground -->
+  <path d="M0 190 Q 200 170, 400 190 L 400 250 L 0 250 Z" fill="#041430" />
+
+  <!-- 4 Community Members Silhouettes / Vector Figures -->
+  <!-- 1. Grandfather with glasses & green sweater (Left) -->
+  <circle cx="105" cy="125" r="14" fill="#e5e7eb" /> <!-- white hair -->
+  <circle cx="105" cy="128" r="11" fill="#fcd34d" /> <!-- face -->
+  <path d="M85 190 C85 145, 125 145, 125 190 Z" fill="#15803d" /> <!-- green shirt -->
+
+  <!-- 2. Mother in Yellow Top (Center-Left) -->
+  <circle cx="170" cy="120" r="14" fill="#1e293b" /> <!-- dark hair -->
+  <circle cx="170" cy="122" r="11" fill="#fcd34d" />
+  <path d="M148 190 C148 140, 192 140, 192 190 Z" fill="#eab308" /> <!-- yellow top -->
+
+  <!-- 3. Father in Blue Shirt (Center-Right) -->
+  <circle cx="235" cy="115" r="15" fill="#1e293b" /> <!-- hair -->
+  <circle cx="235" cy="117" r="12" fill="#fcd34d" />
+  <path d="M210 190 C210 135, 260 135, 260 190 Z" fill="#1e40af" /> <!-- blue shirt -->
+
+  <!-- 4. Child in Green Hoodie (Right) -->
+  <circle cx="295" cy="135" r="12" fill="#1e293b" />
+  <circle cx="295" cy="137" r="10" fill="#fcd34d" />
+  <path d="M278 195 C278 155, 312 155, 312 195 Z" fill="#22c55e" /> <!-- green hoodie -->
+
+  <!-- Glowing Blue/Cyan Shield in Front with Checkmark -->
+  <g filter="url(#regGlow)">
+    <path d="M200 155 L235 170 C235 205, 200 225, 200 230 C200 225, 165 205, 165 170 Z" fill="url(#blueShieldGrad)" stroke="#ffffff" stroke-width="2.5" />
+    <path d="M186 188 L196 198 L214 180" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  </g>
+</svg>

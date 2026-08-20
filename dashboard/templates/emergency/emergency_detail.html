@@ -1,0 +1,129 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">SOS Incident #SOS-{{ emergency.id }}</h1>
+            <p class="page-subtitle">Detailed emergency escalation status and audit trail log.</p>
+        </div>
+        <div>
+            <a href="{% url 'emergency_list' %}" class="btn btn-outline-secondary rounded-3 px-3 fw-bold me-2">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Emergency List
+            </a>
+            <a href="{% url 'emergency_edit' emergency.id %}" class="btn-teal">
+                <i class="fa-solid fa-pen-to-square me-1"></i> Edit Incident
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- INCIDENT OVERVIEW CARD -->
+        <div class="col-lg-5">
+            <div class="admin-card h-100">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="fa-solid fa-circle-info text-primary me-2"></i> Incident Overview</h5>
+                
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Status:</span>
+                    {% if emergency.status == 'ACTIVE' or emergency.status == 'PENDING' %}
+                        <span class="badge-status-danger fs-6 mt-1">ACTIVE SOS</span>
+                    {% elif emergency.status == 'IN_PROGRESS' or emergency.status == 'RESPONDING' %}
+                        <span class="badge-status-pending fs-6 mt-1">IN PROGRESS</span>
+                    {% elif emergency.status == 'RESOLVED' %}
+                        <span class="badge-status-active fs-6 mt-1">RESOLVED</span>
+                    {% else %}
+                        <span class="badge-status-inactive fs-6 mt-1">{{ emergency.get_status_display }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Emergency Type:</span>
+                    <strong class="text-dark fs-6">{{ emergency.emergency_type }}</strong>
+                </div>
+
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Resident Name:</span>
+                    <strong class="text-dark">{{ emergency.resident.get_full_name|default:emergency.resident.username }}</strong> (@{{ emergency.resident.username }})
+                </div>
+
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Resident Contact:</span>
+                    <span>{{ emergency.resident.phone|default:"N/A" }}</span>
+                </div>
+
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Location Address:</span>
+                    <span>{{ details.society }} — {{ details.block }}, Flat {{ details.flat }}</span>
+                    {% if emergency.location_address %}<div class="small text-secondary mt-1">{{ emergency.location_address }}</div>{% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Incident Description:</span>
+                    <p class="bg-light p-2 rounded-2 text-dark small m-0 border">{{ emergency.description|default:"SOS Alert Triggered" }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <span class="text-muted small d-block">Created At:</span>
+                    <small class="text-secondary fw-semibold">{{ emergency.created_at|date:"h:i:s A, M d Y" }}</small>
+                </div>
+
+                {% if emergency.resolved_by or emergency.resolution_notes %}
+                    <div class="p-3 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 mt-3">
+                        <strong class="text-success small d-block mb-1"><i class="fa-solid fa-circle-check me-1"></i> Resolution Details</strong>
+                        {% if emergency.resolved_by %}<div class="small text-dark">Resolved by: {{ emergency.resolved_by.get_full_name|default:emergency.resolved_by.username }}</div>{% endif %}
+                        {% if emergency.resolution_notes %}<div class="small text-secondary mt-1">{{ emergency.resolution_notes }}</div>{% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ESCALATION TIMELINE & AUDIT LOG -->
+        <div class="col-lg-7">
+            <div class="admin-card h-100">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i> Escalation Timeline & Audit Log</h5>
+                
+                <h6 class="fw-bold text-secondary small text-uppercase mb-3">Notification Workflow Stages</h6>
+                <div class="list-group list-group-flush mb-4">
+                    {% for stage in details.stages %}
+                        <div class="list-group-item px-0 py-2 d-flex align-items-center justify-content-between">
+                            <div>
+                                <strong class="small d-block text-dark">{{ stage.role_label }}</strong>
+                                {% if stage.recipient_name %}
+                                    <small class="text-muted">Notified: {{ stage.recipient_name }}</small>
+                                {% endif %}
+                            </div>
+                            <div>
+                                {% if stage.status == 'ACCEPTED' %}
+                                    <span class="badge bg-success rounded-pill small"><i class="fa-solid fa-check me-1"></i> Accepted</span>
+                                {% elif stage.status == 'DECLINED' or stage.status == 'REJECTED' %}
+                                    <span class="badge bg-danger rounded-pill small"><i class="fa-solid fa-xmark me-1"></i> Declined</span>
+                                {% elif stage.status == 'PENDING' %}
+                                    <span class="badge bg-warning text-dark rounded-pill small"><i class="fa-solid fa-spinner fa-spin me-1"></i> Pending</span>
+                                {% else %}
+                                    <span class="badge bg-light text-secondary border rounded-pill small">Not Sent</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <h6 class="fw-bold text-secondary small text-uppercase mb-3">Audit Logs</h6>
+                <div class="bg-light p-3 rounded-3 border" style="max-height:260px; overflow-y:auto;">
+                    {% for log in details.audit_logs %}
+                        <div class="pb-2 mb-2 border-bottom border-secondary border-opacity-10 small">
+                            <div class="d-flex justify-content-between text-muted">
+                                <strong>{{ log.actor }}</strong>
+                                <span>{{ log.timestamp }}</span>
+                            </div>
+                            <div class="text-dark fw-semibold mt-1">{{ log.action }}</div>
+                            {% if log.details %}<div class="text-secondary opacity-75">{{ log.details }}</div>{% endif %}
+                        </div>
+                    {% empty %}
+                        <div class="text-muted text-center py-3 small">No audit logs recorded for this emergency incident.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

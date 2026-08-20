@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardians Management | CareConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+    <style>
+        .crud-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .crud-table-card { background: #ffffff; border-radius: 20px; padding: 24px; border: 1px solid #e2e8f0; overflow-x: auto; }
+        .custom-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+        .custom-table th { padding: 14px; background: #f8fafc; color: #475569; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
+        .custom-table td { padding: 14px; border-bottom: 1px solid #f1f5f9; color: #1e293b; }
+        .btn-action-sm { border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer; margin-right: 6px; }
+        .btn-edit { background: #e0f2fe; color: #0284c7; }
+        .btn-delete { background: #fee2e2; color: #dc2626; }
+        .settings-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center; z-index: 999; }
+        .settings-modal-overlay.show { display: flex; }
+        .settings-modal-content { background: #ffffff; border-radius: 24px; width: 92%; max-width: 640px; padding: 28px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand"><img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'"><h2>CareConnect</h2></div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/resident/resident.html" class="nav-item"><i class="fa-solid fa-table-cells-large nav-icon"></i><span data-i18n="nav_dashboard">Dashboard</span></a>
+            <a href="/dashboard/resident/profile.html" class="nav-item"><i class="fa-regular fa-user nav-icon"></i><span data-i18n="nav_profile">Profile</span></a>
+            <a href="/dashboard/resident/guardians.html" class="nav-item active"><i class="fa-solid fa-user-shield nav-icon"></i><span data-i18n="nav_guardians">Guardians</span></a>
+            <a href="/dashboard/resident/society.html" class="nav-item"><i class="fa-solid fa-building nav-icon"></i><span data-i18n="nav_society">Society</span></a>
+            <a href="/dashboard/resident/emergency.html" class="nav-item nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span data-i18n="nav_emergency">Emergency Alert</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+                <div class="topbar-search-box"><i class="fa-solid fa-magnifying-glass text-muted"></i><input type="text" id="dashboardSearch" placeholder="Search guardians..." oninput="filterModuleList(this.value)"></div>
+            </div>
+            <div class="topbar-right">
+                <button type="button" class="topbar-icon-btn" id="settingsButton" title="Settings"><i class="fa-solid fa-gear"></i></button>
+                <a href="/dashboard/resident/resident.html" class="banner-btn btn-dark">Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <div class="crud-header-row">
+                <div>
+                    <h1 style="font-size:1.6rem; font-weight:800; color:#0f172a;" data-i18n="guardians_header">Family Guardians</h1>
+                    <p style="font-size:0.875rem; color:#64748b;" data-i18n="guardians_header_sub">Emergency family contacts and guardians attached to residents.</p>
+                </div>
+                <button type="button" class="banner-btn btn-teal" onclick="openModuleModal('add')"><i class="fa-solid fa-user-plus"></i> <span data-i18n="add_guardian">Add Guardian</span></button>
+            </div>
+
+            <div class="crud-table-card">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="table_id">ID</th>
+                            <th data-i18n="table_name">Guardian Name</th>
+                            <th>Resident</th>
+                            <th data-i18n="table_phone">Email</th>
+                            <th>Phone</th>
+                            <th data-i18n="table_relation">Relation</th>
+                            <th>Type</th>
+                            <th data-i18n="table_actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="moduleTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="crudModal" class="settings-modal-overlay">
+    <div class="settings-modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 id="crudModalTitle" style="font-size:1.2rem; font-weight:800;">Add Guardian</h3>
+            <button type="button" style="background:none; border:none; font-size:1.4rem; cursor:pointer;" onclick="closeCrudModal()">&times;</button>
+        </div>
+        <form onsubmit="saveModuleRecord(event)">
+            <input type="hidden" id="recordIndex" value="-1">
+            <div id="dynamicFormContainer"></div>
+            <button type="submit" class="banner-btn btn-teal" style="width:100%; margin-top:8px;">Save Guardian Record</button>
+        </form>
+    </div>
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/module-crud.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        initModulePage("guardians");
+    });
+</script>
+    <script src="/js/auth-guard.js"></script>
+</body>
+</html>

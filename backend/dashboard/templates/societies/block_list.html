@@ -1,0 +1,92 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="admin-page-container fade-up">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-header-row">
+        <div>
+            <h1 class="page-title">Blocks</h1>
+            <p class="page-subtitle">Manage society building blocks, floors, and occupancy structures.</p>
+        </div>
+        <div>
+            <a href="{% url 'block_add' %}" class="btn-teal">
+                <i class="fa-solid fa-cubes"></i> + Add Block
+            </a>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER -->
+    <div class="admin-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Search by block name or society..." value="{{ query|default:'' }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-teal w-100 py-2 justify-content-center">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- BLOCKS TABLE CARD -->
+    <div class="admin-card">
+        {% if blocks %}
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Block Name</th>
+                            <th>Society Name</th>
+                            <th>Total Floors</th>
+                            <th>Flats Count</th>
+                            <th>Residents Count</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in blocks %}
+                            <tr>
+                                <td class="fw-bold text-secondary">#{{ b.id }}</td>
+                                <td>
+                                    <strong class="d-block text-dark">{{ b.block_name }}</strong>
+                                </td>
+                                <td>{{ b.society.name|default:"N/A" }}</td>
+                                <td>{{ b.total_floors }} Floor{% if b.total_floors != 1 %}s{% endif %}</td>
+                                <td><span class="badge bg-light text-dark border px-2 py-1 fw-bold">{{ b.flat_count }} Flat{% if b.flat_count != 1 %}s{% endif %}</span></td>
+                                <td><span class="badge bg-light text-dark border px-2 py-1 fw-bold">{{ b.resident_count }} Resident{% if b.resident_count != 1 %}s{% endif %}</span></td>
+                                <td><span class="badge-status-active">Active</span></td>
+                                <td class="text-end">
+                                    <a href="{% url 'block_edit' b.id %}" class="btn-edit-action me-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'block_delete' b.id %}" class="btn-delete-action">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state-box">
+                <i class="fa-solid fa-cubes empty-state-icon"></i>
+                <h4 class="empty-state-title">No Blocks Found</h4>
+                <p class="empty-state-sub">There are currently no society blocks registered in the database.</p>
+                <a href="{% url 'block_add' %}" class="btn-teal">
+                    <i class="fa-solid fa-plus"></i> Add First Block
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

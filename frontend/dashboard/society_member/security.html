@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Personnel | CareConnect Society Member</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+    <style>
+        .custom-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .custom-table th { padding: 14px 16px; font-weight: 700; color: #64748b; font-size: 0.82rem; border-bottom: 2px solid #f1f5f9; background: #f8fafc; }
+        .custom-table td { padding: 14px 16px; font-size: 0.88rem; color: #0f172a; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
+            <h2>CareConnect</h2>
+        </div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/society_member/society_member.html" class="nav-item"><i class="fa-solid fa-table-cells-large nav-icon"></i><span>Dashboard</span></a>
+            <a href="/dashboard/society_member/profile.html" class="nav-item"><i class="fa-regular fa-user nav-icon"></i><span>Profile</span></a>
+            <a href="/dashboard/society_member/residents.html" class="nav-item"><i class="fa-solid fa-users nav-icon"></i><span>Residents</span></a>
+            <a href="/dashboard/society_member/guardians.html" class="nav-item"><i class="fa-solid fa-user-shield nav-icon"></i><span>Guardians</span></a>
+            <a href="/dashboard/society_member/society.html" class="nav-item"><i class="fa-solid fa-building nav-icon"></i><span>Society</span></a>
+            <a href="/dashboard/society_member/blocks.html" class="nav-item"><i class="fa-solid fa-cubes nav-icon"></i><span>Blocks</span></a>
+            <a href="/dashboard/society_member/flats.html" class="nav-item"><i class="fa-solid fa-door-closed nav-icon"></i><span>Flats</span></a>
+            <a href="/dashboard/society_member/security.html" class="nav-item active"><i class="fa-solid fa-shield-halved nav-icon"></i><span>Security</span></a>
+            <a href="/dashboard/society_member/volunteers.html" class="nav-item"><i class="fa-solid fa-hand-holding-heart nav-icon"></i><span>Volunteers</span></a>
+            <a href="/dashboard/society_member/emergency.html" class="nav-item nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span>Emergency Alerts</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+                <div class="search-box-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" class="topbar-search-input" placeholder="Search security personnel..." oninput="filterModuleList(this.value)">
+                </div>
+            </div>
+            <div class="topbar-right">
+                <a href="/dashboard/society_member/society_member.html" class="banner-btn btn-dark"><i class="fa-solid fa-house me-1"></i> Dashboard</a>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
+                <div>
+                    <h1 style="font-size:1.6rem; font-weight:900; color:#0f172a; margin:0;">Security Personnel Directory</h1>
+                    <p style="font-size:0.9rem; color:#64748b; margin-top:4px;">Read-only directory of on-duty gate guards and security staff.</p>
+                </div>
+            </div>
+
+            <div style="background:#ffffff; border-radius:20px; padding:24px; border:1px solid #e2e8f0; box-shadow:0 2px 4px rgba(0,0,0,0.02); overflow-x:auto;">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Guard Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Shift</th>
+                            <th>Status</th>
+                            <th>Assigned Block</th>
+                        </tr>
+                    </thead>
+                    <tbody id="moduleTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script src="/js/module-crud.js"></script>
+<script>
+window.isReadOnly = true;
+document.addEventListener("DOMContentLoaded", () => {
+    verifySessionAndRole("society_member");
+    initModulePage("security");
+});
+</script>
+</body>
+</html>

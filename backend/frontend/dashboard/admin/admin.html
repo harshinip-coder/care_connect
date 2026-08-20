@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Management Dashboard | CareConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        
+        /* SIDEBAR STYLES MATCHING MOCKUP */
+        .sidebar-navigation .nav-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-radius: 12px; color: #94a3b8; font-weight: 600; text-decoration: none; margin-bottom: 4px; transition: all 0.2s ease; }
+        .sidebar-navigation .nav-item:hover { background: rgba(255,255,255,0.08); color: #ffffff; }
+        .sidebar-navigation .nav-item.active { background: #0284c7; color: #ffffff; font-weight: 700; }
+        .sidebar-navigation .nav-item-left { display: flex; align-items: center; gap: 12px; }
+        .sidebar-chevron { font-size: 0.75rem; opacity: 0.6; }
+
+        .sidebar-footer-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 16px; margin: 24px 16px 16px; text-align: center; color: #e2e8f0; }
+        .sidebar-footer-card i { font-size: 1.8rem; color: #38bdf8; margin-bottom: 8px; display: block; }
+        .sidebar-footer-card h4 { font-size: 0.85rem; font-weight: 800; margin-bottom: 4px; color: #ffffff; }
+        .sidebar-footer-card p { font-size: 0.75rem; color: #94a3b8; margin: 0; line-height: 1.3; }
+
+        /* TOP 6 METRIC CARDS */
+        .top-metrics-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 1400px) { .top-metrics-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .top-metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .metric-summary-card { background: #ffffff; border-radius: 20px; padding: 20px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .metric-summary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.04); }
+        .metric-icon-box { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #ffffff; flex-shrink: 0; }
+        .metric-info { display: flex; flex-direction: column; }
+        .metric-info label { font-size: 0.8rem; font-weight: 600; color: #64748b; margin-bottom: 2px; }
+        .metric-info strong { font-size: 1.4rem; font-weight: 800; color: #0f172a; line-height: 1.1; }
+        .metric-trend { font-size: 0.75rem; font-weight: 700; color: #16a34a; margin-top: 4px; }
+        .metric-alert-tag { font-size: 0.75rem; font-weight: 700; color: #dc2626; margin-top: 4px; }
+
+        /* 3-COLUMN MAIN GRID */
+        .admin-main-grid { display: grid; grid-template-columns: 1fr 1.1fr 1.1fr; gap: 24px; margin-bottom: 24px; }
+        @media (max-width: 1200px) { .admin-main-grid { grid-template-columns: 1fr; } }
+
+        .admin-card { background: #ffffff; border-radius: 24px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .card-header-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+
+        /* QUICK ACTIONS LIST */
+        .quick-action-link { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 14px; background: #f8fafc; border: 1px solid #f1f5f9; text-decoration: none; color: #1e293b; font-weight: 700; font-size: 0.9rem; margin-bottom: 10px; transition: all 0.2s ease; cursor: pointer; }
+        .quick-action-link:hover { background: #f0f9ff; border-color: #bae6fd; color: #0284c7; }
+        .quick-action-left { display: flex; align-items: center; gap: 12px; }
+        .action-icon-circle { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+
+        .btn-view-all-alerts { display: block; width: 100%; text-align: center; background: #fff5f5; color: #dc2626; border: 1px solid #fecaca; font-weight: 800; padding: 12px; border-radius: 14px; text-decoration: none; margin-top: 14px; font-size: 0.9rem; transition: background 0.2s ease; }
+        .btn-view-all-alerts:hover { background: #fee2e2; }
+
+        /* COMMUNITY OVERVIEW GRID (6 TILES) */
+        .overview-tiles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .overview-tile { background: #f8fafc; border-radius: 18px; padding: 18px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; height: 110px; transition: transform 0.2s ease; }
+        .overview-tile:hover { transform: translateY(-2px); border-color: #cbd5e1; }
+        .overview-tile-top { display: flex; align-items: center; gap: 14px; }
+        .overview-tile-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #fff; flex-shrink: 0; }
+        .overview-tile-num { font-size: 1.3rem; font-weight: 800; color: #0f172a; }
+        .overview-tile-label { font-size: 0.75rem; color: #64748b; font-weight: 600; display: block; }
+        .overview-tile-link { font-size: 0.78rem; font-weight: 700; color: #0284c7; text-decoration: none; margin-top: auto; }
+
+        /* RECENT ALERTS LIST */
+        .recent-alert-row { display: flex; align-items: center; justify-content: space-between; padding: 14px; border-radius: 16px; background: #f8fafc; border: 1px solid #f1f5f9; margin-bottom: 10px; }
+        .alert-left-box { display: flex; align-items: center; gap: 14px; }
+        .alert-type-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .badge-active-pill { background: #fee2e2; color: #dc2626; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .badge-resolved-pill { background: #dcfce7; color: #166534; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .badge-cancelled-pill { background: #f1f5f9; color: #475569; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+
+        /* SYSTEM SUMMARY BOTTOM ROW */
+        .system-summary-card { background: #ffffff; border-radius: 24px; padding: 24px; border: 1px solid #e2e8f0; }
+        .summary-pills-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 14px; }
+        .summary-pill-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 14px 20px; display: flex; align-items: center; gap: 14px; flex: 1; min-width: 160px; }
+        .summary-pill-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; }
+
+        /* NOTIFICATIONS DROPDOWN POPOVER */
+        .notif-dropdown-panel { position: absolute; top: 60px; right: 80px; width: 340px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.12); z-index: 9999; display: none; overflow: hidden; animation: fadeInDown 0.2s ease; }
+        .notif-dropdown-panel.show { display: block; }
+        .notif-header { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; }
+        .notif-header h4 { margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a; }
+        .notif-list-body { max-height: 320px; overflow-y: auto; padding: 8px; }
+        .notif-item-row { padding: 12px 14px; border-radius: 12px; display: flex; align-items: flex-start; gap: 12px; transition: background 0.15s ease; border-bottom: 1px solid #f8fafc; }
+        .notif-item-row:hover { background: #f1f5f9; }
+        .notif-item-icon { width: 32px; height: 32px; border-radius: 8px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; margin-top: 2px; }
+
+        /* SEARCH RESULTS DROPDOWN */
+        .search-results-popover { position: absolute; top: 60px; left: 60px; width: 420px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.12); z-index: 9998; display: none; max-height: 360px; overflow-y: auto; padding: 10px; }
+        .search-results-popover.show { display: block; }
+        .search-item-row { padding: 10px 14px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; text-decoration: none; color: #0f172a; transition: background 0.15s; }
+        .search-item-row:hover { background: #f0f9ff; }
+
+        /* LEFT SIDE TOAST CONTAINER */
+        #leftToastContainer { position: fixed; bottom: 24px; left: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .left-toast-card { pointer-events: auto; background: #ffffff; border: 1px solid #cbd5e1; border-left: 5px solid #0284c7; border-radius: 14px; padding: 14px 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 14px; min-width: 280px; max-width: 380px; animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .left-toast-card.toast-success { border-left-color: #10b981; }
+        .left-toast-card.toast-error { border-left-color: #ef4444; }
+        .left-toast-card.toast-info { border-left-color: #0284c7; }
+
+        @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeInDown { from { transform: translateY(-8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- LEFT SIDEBAR -->
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
+            <h2>CareConnect</h2>
+        </div>
+
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/admin/admin.html" class="nav-item active">
+                <div class="nav-item-left"><i class="fa-solid fa-table-cells-large nav-icon"></i><span data-i18n="dashboard">Dashboard</span></div>
+            </a>
+            <a href="/dashboard/admin/residents.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-users nav-icon"></i><span data-i18n="residents">Residents</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+            <a href="/dashboard/admin/guardians.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-user-shield nav-icon"></i><span data-i18n="guardians">Guardians</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+            <a href="/dashboard/admin/society.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-people-group nav-icon"></i><span data-i18n="society_members">Society Members</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+            <a href="/dashboard/admin/society.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-building nav-icon"></i><span data-i18n="societies">Societies</span></div>
+            </a>
+            <a href="/dashboard/admin/blocks.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-cubes nav-icon"></i><span data-i18n="blocks">Blocks</span></div>
+            </a>
+            <a href="/dashboard/admin/flats.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-door-closed nav-icon"></i><span data-i18n="flats">Flats</span></div>
+            </a>
+            <a href="/dashboard/admin/security.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-shield-halved nav-icon"></i><span data-i18n="security_personnel">Security Personnel</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+            <a href="/dashboard/admin/volunteers.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-hand-holding-heart nav-icon"></i><span data-i18n="volunteers">Volunteers</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+            <a href="/dashboard/admin/emergency.html" class="nav-item nav-emergency">
+                <div class="nav-item-left"><i class="fa-solid fa-bell nav-icon text-red"></i><span data-i18n="emergency_alerts">Emergency Alerts</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+            <a href="/dashboard/admin/emergency.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-envelope-open-text nav-icon"></i><span data-i18n="notifications">Notifications</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+            <a href="/dashboard/admin/admin.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-chart-column nav-icon"></i><span data-i18n="reports_analytics">Reports & Analytics</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+            <a href="/dashboard/admin/residents.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-users-gear nav-icon"></i><span data-i18n="user_management">User Management</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+            <a href="/dashboard/admin/profile.html" class="nav-item">
+                <div class="nav-item-left"><i class="fa-solid fa-gear nav-icon"></i><span data-i18n="settings">Settings</span></div>
+                <i class="fa-solid fa-chevron-right sidebar-chevron"></i>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer-card">
+            <i class="fa-solid fa-hands-holding-child"></i>
+            <h4 data-i18n="sidebar_banner_title">Together, we build a safer community.</h4>
+            <p data-i18n="sidebar_banner_sub">Care today, Connected always.</p>
+        </div>
+    </aside>
+
+    <!-- MAIN DASHBOARD BODY -->
+    <main class="dashboard-main">
+        <!-- TOPBAR -->
+        <header class="dashboard-topbar">
+            <div class="topbar-left" style="position:relative;">
+                <button type="button" class="sidebar-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+                <div class="topbar-search-box">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                    <input type="text" id="topbarSearchInput" data-i18n-placeholder="search_placeholder" placeholder="Search anything..." oninput="handleGlobalSearch(this.value)" autocomplete="off">
+                </div>
+                <div id="searchResultsOverlay" class="search-results-popover"></div>
+            </div>
+
+            <div class="topbar-right" style="position:relative;">
+                <!-- NOTIFICATION ICON -->
+                <button type="button" class="topbar-icon-btn" id="notificationBtn" onclick="toggleNotificationsDropdown()" style="position:relative;" title="Notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <span id="notifBadge" style="position:absolute; top:2px; right:2px; background:#dc2626; color:#fff; width:18px; height:18px; border-radius:50%; font-size:0.65rem; font-weight:800; display:flex; align-items:center; justify-content:center;">0</span>
+                </button>
+
+                <div id="notificationDropdown" class="notif-dropdown-panel">
+                    <div class="notif-header">
+                        <h4 data-i18n="notifications">Notifications</h4>
+                        <span style="font-size:0.75rem; font-weight:700; color:#0284c7; cursor:pointer;" onclick="markAllNotificationsRead()">Mark all read</span>
+                    </div>
+                    <div class="notif-list-body" id="notifListContainer"></div>
+                </div>
+
+                <!-- SETTINGS ICON BUTTON -->
+                <button type="button" class="topbar-icon-btn" id="settingsButton" onclick="openSettingsModal()" title="Settings & Preferences">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+
+                <!-- PROFILE AVATAR PILL -->
+                <div class="topbar-user-pill" style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.location.href='/dashboard/admin/profile.html'" title="View Profile">
+                    <img src="https://ui-avatars.com/api/?name=Harshini+P&background=0284c7&color=fff&bold=true" id="userAvatarImg" class="topbar-user-avatar" style="width:38px; height:38px; border-radius:50%;">
+                    <div style="display:flex; flex-direction:column;">
+                        <strong id="topbarUserName" style="font-size:0.9rem; color:#0f172a;">Harshini P</strong>
+                        <span id="topbarUserRole" style="font-size:0.75rem; color:#64748b;" data-i18n="role_admin">Administrator</span>
+                    </div>
+                </div>
+
+                <button type="button" class="banner-btn btn-dark" style="margin-left:12px;" onclick="handleLogout()" data-i18n="logout">Logout</button>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <!-- WELCOME HEADER -->
+            <div style="margin-bottom:24px;">
+                <h1 style="font-size:1.6rem; font-weight:800; color:#0f172a; margin:0;" id="welcomeHeaderTitle">Welcome back, <span id="welcomeUserName">Harshini P</span> 👋</h1>
+                <p style="font-size:0.9rem; color:#64748b; margin-top:4px;" data-i18n="welcome_sub">Here's what's happening in your community today.</p>
+            </div>
+
+            <!-- TOP 6 METRIC SUMMARY CARDS -->
+            <div class="top-metrics-grid">
+                <!-- 1. Residents -->
+                <div class="metric-summary-card">
+                    <div class="metric-icon-box" style="background:#10b981;"><i class="fa-solid fa-users"></i></div>
+                    <div class="metric-info">
+                        <label data-i18n="residents">Residents</label>
+                        <strong id="statResidents">0</strong>
+                        <span class="metric-trend" id="trendResidents">+0 this week ↗</span>
+                    </div>
+                </div>
+
+                <!-- 2. Guardians -->
+                <div class="metric-summary-card">
+                    <div class="metric-icon-box" style="background:#8b5cf6;"><i class="fa-solid fa-user"></i></div>
+                    <div class="metric-info">
+                        <label data-i18n="guardians">Guardians</label>
+                        <strong id="statGuardians">0</strong>
+                        <span class="metric-trend" id="trendGuardians">+0 this week ↗</span>
+                    </div>
+                </div>
+
+                <!-- 3. Society Members -->
+                <div class="metric-summary-card">
+                    <div class="metric-icon-box" style="background:#3b82f6;"><i class="fa-solid fa-users-rectangle"></i></div>
+                    <div class="metric-info">
+                        <label data-i18n="society_members">Society Members</label>
+                        <strong id="statSocietyMembers">0</strong>
+                        <span class="metric-trend" id="trendSocietyMembers">+0 this week ↗</span>
+                    </div>
+                </div>
+
+                <!-- 4. Security Personnel -->
+                <div class="metric-summary-card">
+                    <div class="metric-icon-box" style="background:#f97316;"><i class="fa-solid fa-shield"></i></div>
+                    <div class="metric-info">
+                        <label data-i18n="security_personnel">Security Personnel</label>
+                        <strong id="statSecurity">0</strong>
+                        <span class="metric-trend" id="trendSecurity">+0 this week ↗</span>
+                    </div>
+                </div>
+
+                <!-- 5. Volunteers -->
+                <div class="metric-summary-card">
+                    <div class="metric-icon-box" style="background:#14b8a6;"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                    <div class="metric-info">
+                        <label data-i18n="volunteers">Volunteers</label>
+                        <strong id="statVolunteers">0</strong>
+                        <span class="metric-trend" id="trendVolunteers">+0 this week ↗</span>
+                    </div>
+                </div>
+
+                <!-- 6. Active Alerts -->
+                <div class="metric-summary-card">
+                    <div class="metric-icon-box" style="background:#ef4444;"><i class="fa-solid fa-bell"></i></div>
+                    <div class="metric-info">
+                        <label data-i18n="active_alerts">Active Alerts</label>
+                        <strong id="statActiveAlerts">0</strong>
+                        <span class="metric-alert-tag" id="tagActiveAlerts">0 Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3-COLUMN CONTENT GRID -->
+            <div class="admin-main-grid">
+                <!-- COL 1: QUICK ACTIONS -->
+                <div class="admin-card">
+                    <div class="card-header-title">
+                        <span data-i18n="quick_actions">Quick Actions</span>
+                    </div>
+
+                    <div class="quick-action-link" onclick="openAdminQuickModal('residents')">
+                        <div class="quick-action-left">
+                            <div class="action-icon-circle" style="background:#d1fae5; color:#059669;"><i class="fa-solid fa-user-plus"></i></div>
+                            <span data-i18n="add_resident">Add Resident</span>
+                        </div>
+                        <i class="fa-solid fa-plus text-muted" style="font-size:0.85rem;"></i>
+                    </div>
+
+                    <div class="quick-action-link" onclick="openAdminQuickModal('guardians')">
+                        <div class="quick-action-left">
+                            <div class="action-icon-circle" style="background:#ede9fe; color:#7c3aed;"><i class="fa-solid fa-user-shield"></i></div>
+                            <span data-i18n="add_guardian">Add Guardian</span>
+                        </div>
+                        <i class="fa-solid fa-plus text-muted" style="font-size:0.85rem;"></i>
+                    </div>
+
+                    <div class="quick-action-link" onclick="openAdminQuickModal('society_members')">
+                        <div class="quick-action-left">
+                            <div class="action-icon-circle" style="background:#dbeafe; color:#2563eb;"><i class="fa-solid fa-users"></i></div>
+                            <span data-i18n="add_society_member">Add Society Member</span>
+                        </div>
+                        <i class="fa-solid fa-plus text-muted" style="font-size:0.85rem;"></i>
+                    </div>
+
+                    <div class="quick-action-link" onclick="openAdminQuickModal('societies')">
+                        <div class="quick-action-left">
+                            <div class="action-icon-circle" style="background:#ccfbf1; color:#0d9488;"><i class="fa-solid fa-building"></i></div>
+                            <span data-i18n="add_society">Add Society</span>
+                        </div>
+                        <i class="fa-solid fa-plus text-muted" style="font-size:0.85rem;"></i>
+                    </div>
+
+                    <div class="quick-action-link" onclick="openAdminQuickModal('blocks')">
+                        <div class="quick-action-left">
+                            <div class="action-icon-circle" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-cubes"></i></div>
+                            <span data-i18n="add_block">Add Block</span>
+                        </div>
+                        <i class="fa-solid fa-plus text-muted" style="font-size:0.85rem;"></i>
+                    </div>
+
+                    <div class="quick-action-link" onclick="openAdminQuickModal('flats')">
+                        <div class="quick-action-left">
+                            <div class="action-icon-circle" style="background:#ffe4e6; color:#e11d48;"><i class="fa-solid fa-door-closed"></i></div>
+                            <span data-i18n="add_flat">Add Flat</span>
+                        </div>
+                        <i class="fa-solid fa-plus text-muted" style="font-size:0.85rem;"></i>
+                    </div>
+
+                    <div class="quick-action-link" onclick="openAdminQuickModal('security')">
+                        <div class="quick-action-left">
+                            <div class="action-icon-circle" style="background:#e0f2fe; color:#0284c7;"><i class="fa-solid fa-shield-halved"></i></div>
+                            <span data-i18n="add_security_personnel">Add Security Personnel</span>
+                        </div>
+                        <i class="fa-solid fa-plus text-muted" style="font-size:0.85rem;"></i>
+                    </div>
+
+                    <div class="quick-action-link" onclick="openAdminQuickModal('volunteers')">
+                        <div class="quick-action-left">
+                            <div class="action-icon-circle" style="background:#ffedd5; color:#ea580c;"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                            <span data-i18n="add_volunteer">Add Volunteer</span>
+                        </div>
+                        <i class="fa-solid fa-plus text-muted" style="font-size:0.85rem;"></i>
+                    </div>
+
+                    <a href="/dashboard/admin/emergency.html" class="btn-view-all-alerts">
+                        <i class="fa-solid fa-bullhorn me-1"></i> <span data-i18n="view_all_emergency_alerts">View All Emergency Alerts</span>
+                    </a>
+                </div>
+
+                <!-- COL 2: COMMUNITY OVERVIEW -->
+                <div class="admin-card">
+                    <div class="card-header-title">
+                        <span data-i18n="community_overview">Community Overview</span>
+                    </div>
+
+                    <div class="overview-tiles-grid">
+                        <div class="overview-tile">
+                            <div class="overview-tile-top">
+                                <div class="overview-tile-icon" style="background:#10b981;"><i class="fa-solid fa-users"></i></div>
+                                <div>
+                                    <div class="overview-tile-num" id="tileSocieties">0</div>
+                                    <span class="overview-tile-label" data-i18n="overview_societies">Societies</span>
+                                </div>
+                            </div>
+                            <a href="/dashboard/admin/society.html" class="overview-tile-link" data-i18n="view_all">View All →</a>
+                        </div>
+
+                        <div class="overview-tile">
+                            <div class="overview-tile-top">
+                                <div class="overview-tile-icon" style="background:#8b5cf6;"><i class="fa-solid fa-building"></i></div>
+                                <div>
+                                    <div class="overview-tile-num" id="tileBlocks">0</div>
+                                    <span class="overview-tile-label" data-i18n="overview_blocks">Blocks</span>
+                                </div>
+                            </div>
+                            <a href="/dashboard/admin/blocks.html" class="overview-tile-link" data-i18n="view_all">View All →</a>
+                        </div>
+
+                        <div class="overview-tile">
+                            <div class="overview-tile-top">
+                                <div class="overview-tile-icon" style="background:#f97316;"><i class="fa-solid fa-building-user"></i></div>
+                                <div>
+                                    <div class="overview-tile-num" id="tileFlats">0</div>
+                                    <span class="overview-tile-label" data-i18n="overview_flats">Flats</span>
+                                </div>
+                            </div>
+                            <a href="/dashboard/admin/flats.html" class="overview-tile-link" data-i18n="view_all">View All →</a>
+                        </div>
+
+                        <div class="overview-tile">
+                            <div class="overview-tile-top">
+                                <div class="overview-tile-icon" style="background:#3b82f6;"><i class="fa-solid fa-user"></i></div>
+                                <div>
+                                    <div class="overview-tile-num" id="tileTotalUsers">0</div>
+                                    <span class="overview-tile-label" data-i18n="total_users">Total Users</span>
+                                </div>
+                            </div>
+                            <a href="/dashboard/admin/residents.html" class="overview-tile-link" data-i18n="view_all">View All →</a>
+                        </div>
+
+                        <div class="overview-tile">
+                            <div class="overview-tile-top">
+                                <div class="overview-tile-icon" style="background:#ef4444;"><i class="fa-solid fa-bell"></i></div>
+                                <div>
+                                    <div class="overview-tile-num" id="tileActiveAlerts">0</div>
+                                    <span class="overview-tile-label" data-i18n="active_alerts">Active Alerts</span>
+                                </div>
+                            </div>
+                            <a href="/dashboard/admin/emergency.html" class="overview-tile-link" data-i18n="view_all">View All →</a>
+                        </div>
+
+                        <div class="overview-tile">
+                            <div class="overview-tile-top">
+                                <div class="overview-tile-icon" style="background:#10b981;"><i class="fa-solid fa-circle-check"></i></div>
+                                <div>
+                                    <div class="overview-tile-num" id="tileResolutionRate">0.0%</div>
+                                    <span class="overview-tile-label" data-i18n="resolution_rate">Resolution Rate</span>
+                                </div>
+                            </div>
+                            <a href="/dashboard/admin/admin.html" class="overview-tile-link" data-i18n="view_reports">View Reports →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COL 3: RECENT ALERTS -->
+                <div class="admin-card">
+                    <div class="card-header-title">
+                        <span data-i18n="recent_alerts">Recent Alerts</span>
+                        <a href="/dashboard/admin/emergency.html" style="font-size:0.85rem; font-weight:700; color:#7c3aed; text-decoration:none;" data-i18n="view_all">View All →</a>
+                    </div>
+                    <div id="recentAlertsListContainer"></div>
+                </div>
+            </div>
+
+            <!-- SYSTEM SUMMARY BOTTOM ROW -->
+            <div class="system-summary-card">
+                <h3 style="font-size:1.1rem; font-weight:800; color:#0f172a; margin:0;" data-i18n="system_summary">System Summary</h3>
+                <div class="summary-pills-row">
+                    <div class="summary-pill-item">
+                        <div class="summary-pill-icon" style="background:#3b82f6;"><i class="fa-solid fa-user"></i></div>
+                        <div>
+                            <span style="font-size:0.75rem; color:#64748b; display:block; font-weight:600;" data-i18n="total_users">Total Users</span>
+                            <strong style="font-size:1.1rem; color:#0f172a;" id="sumTotalUsers">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="summary-pill-item">
+                        <div class="summary-pill-icon" style="background:#10b981;"><i class="fa-solid fa-building"></i></div>
+                        <div>
+                            <span style="font-size:0.75rem; color:#64748b; display:block; font-weight:600;" data-i18n="total_societies">Total Societies</span>
+                            <strong style="font-size:1.1rem; color:#0f172a;" id="sumTotalSocieties">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="summary-pill-item">
+                        <div class="summary-pill-icon" style="background:#8b5cf6;"><i class="fa-solid fa-cubes"></i></div>
+                        <div>
+                            <span style="font-size:0.75rem; color:#64748b; display:block; font-weight:600;" data-i18n="total_blocks">Total Blocks</span>
+                            <strong style="font-size:1.1rem; color:#0f172a;" id="sumTotalBlocks">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="summary-pill-item">
+                        <div class="summary-pill-icon" style="background:#f97316;"><i class="fa-solid fa-door-closed"></i></div>
+                        <div>
+                            <span style="font-size:0.75rem; color:#64748b; display:block; font-weight:600;" data-i18n="total_flats">Total Flats</span>
+                            <strong style="font-size:1.1rem; color:#0f172a;" id="sumTotalFlats">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="summary-pill-item">
+                        <div class="summary-pill-icon" style="background:#ef4444;"><i class="fa-solid fa-bell"></i></div>
+                        <div>
+                            <span style="font-size:0.75rem; color:#64748b; display:block; font-weight:600;" data-i18n="total_alerts">Total Alerts</span>
+                            <strong style="font-size:1.1rem; color:#0f172a;" id="sumTotalAlerts">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="summary-pill-item">
+                        <div class="summary-pill-icon" style="background:#16a34a;"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <span style="font-size:0.75rem; color:#64748b; display:block; font-weight:600;" data-i18n="system_status">System Status</span>
+                            <strong style="font-size:1.1rem; color:#166534;" id="sumSystemStatus" data-i18n="online">Online</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- INLINE QUICK ACTION ADD/EDIT MODAL -->
+<div id="adminQuickModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:99999; align-items:center; justify-content:center;">
+    <div style="background:#ffffff; border-radius:24px; width:90%; max-width:540px; padding:28px; box-shadow:0 20px 40px rgba(0,0,0,0.2); position:relative;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; border-bottom:1px solid #f1f5f9; padding-bottom:14px;">
+            <h3 id="adminQuickModalTitle" style="font-size:1.2rem; font-weight:800; margin:0; color:#0f172a;">Add New Entity</h3>
+            <button type="button" onclick="closeAdminQuickModal()" style="background:none; border:none; font-size:1.5rem; color:#64748b; cursor:pointer;">&times;</button>
+        </div>
+
+        <form id="adminQuickForm" onsubmit="handleAdminQuickSubmit(event)">
+            <input type="hidden" id="quickEntityType">
+            <div id="quickFormFields"></div>
+
+            <div style="display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-top:24px;">
+                <button type="button" class="banner-btn btn-dark" style="background:#f1f5f9; color:#475569;" onclick="closeAdminQuickModal()" data-i18n="btn_cancel">Cancel</button>
+                <button type="submit" class="banner-btn btn-teal"><i class="fa-solid fa-check me-1"></i> <span data-i18n="btn_save">Save Entry</span></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="leftToastContainer"></div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/emergency-manager.js"></script>
+<script src="/js/auth-guard.js"></script>
+
+<script>
+let globalAdminStats = null;
+let globalNotifications = [];
+
+document.addEventListener("DOMContentLoaded", () => {
+    verifySessionAndRole("admin");
+    fetchAdminStats();
+
+    document.addEventListener("click", (e) => {
+        const notifBtn = document.getElementById("notificationBtn");
+        const notifDropdown = document.getElementById("notificationDropdown");
+        if (notifDropdown && notifBtn && !notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+            notifDropdown.classList.remove("show");
+        }
+
+        const searchOverlay = document.getElementById("searchResultsOverlay");
+        const searchInput = document.getElementById("topbarSearchInput");
+        if (searchOverlay && searchInput && !searchInput.contains(e.target) && !searchOverlay.contains(e.target)) {
+            searchOverlay.classList.remove("show");
+        }
+    });
+});
+
+async function fetchAdminStats() {
+    try {
+        const baseUrl = typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+        const res = await fetch(`${baseUrl}/api/dashboard/admin-stats/`, { credentials: "include" });
+        const data = await res.json();
+
+        if (data.success && data.stats) {
+            globalAdminStats = data.stats;
+            const s = data.stats;
+
+            // Top Metric Cards
+            if (document.getElementById("statResidents")) document.getElementById("statResidents").textContent = s.resident_count;
+            if (document.getElementById("statGuardians")) document.getElementById("statGuardians").textContent = s.guardian_count;
+            if (document.getElementById("statSocietyMembers")) document.getElementById("statSocietyMembers").textContent = s.society_member_count;
+            if (document.getElementById("statSecurity")) document.getElementById("statSecurity").textContent = s.security_count;
+            if (document.getElementById("statVolunteers")) document.getElementById("statVolunteers").textContent = s.volunteer_count;
+            if (document.getElementById("statActiveAlerts")) document.getElementById("statActiveAlerts").textContent = s.active_alerts_count;
+
+            // Trends
+            if (document.getElementById("trendResidents")) document.getElementById("trendResidents").textContent = `+${s.res_week || 0} this week ↗`;
+            if (document.getElementById("trendGuardians")) document.getElementById("trendGuardians").textContent = `+${s.grd_week || 0} this week ↗`;
+            if (document.getElementById("trendSocietyMembers")) document.getElementById("trendSocietyMembers").textContent = `+${s.soc_mem_week || 0} this week ↗`;
+            if (document.getElementById("trendSecurity")) document.getElementById("trendSecurity").textContent = `+${s.sec_week || 0} this week ↗`;
+            if (document.getElementById("trendVolunteers")) document.getElementById("trendVolunteers").textContent = `+${s.vol_week || 0} this week ↗`;
+            if (document.getElementById("tagActiveAlerts")) document.getElementById("tagActiveAlerts").textContent = s.active_alerts_count > 0 ? `${s.active_alerts_count} Active` : "0 Active";
+
+            // Overview Tiles
+            if (document.getElementById("tileSocieties")) document.getElementById("tileSocieties").textContent = s.society_count;
+            if (document.getElementById("tileBlocks")) document.getElementById("tileBlocks").textContent = s.block_count;
+            if (document.getElementById("tileFlats")) document.getElementById("tileFlats").textContent = s.flat_count;
+            if (document.getElementById("tileTotalUsers")) document.getElementById("tileTotalUsers").textContent = s.total_users_count;
+            if (document.getElementById("tileActiveAlerts")) document.getElementById("tileActiveAlerts").textContent = s.active_alerts_count;
+            if (document.getElementById("tileResolutionRate")) document.getElementById("tileResolutionRate").textContent = `${s.resolution_rate}%`;
+
+            // System Summary
+            if (document.getElementById("sumTotalUsers")) document.getElementById("sumTotalUsers").textContent = s.total_users_count;
+            if (document.getElementById("sumTotalSocieties")) document.getElementById("sumTotalSocieties").textContent = s.society_count;
+            if (document.getElementById("sumTotalBlocks")) document.getElementById("sumTotalBlocks").textContent = s.block_count;
+            if (document.getElementById("sumTotalFlats")) document.getElementById("sumTotalFlats").textContent = s.flat_count;
+            if (document.getElementById("sumTotalAlerts")) document.getElementById("sumTotalAlerts").textContent = s.total_alerts_count;
+
+            // Notifications
+            globalNotifications = s.notifications_list || [];
+            renderNotificationsUI();
+
+            // Update Dynamic Trends & Translated Alerts
+            updateDynamicStatsUI();
+        }
+    } catch (err) {
+        console.error("Error fetching admin stats:", err);
+    }
+}
+
+function updateDynamicStatsUI() {
+    if (!globalAdminStats) return;
+    const s = globalAdminStats;
+    const lang = localStorage.getItem("cc_language") || "en";
+    const tw = typeof getTranslationText === "function" ? getTranslationText("this_week_text", lang) : "this week";
+    const actStr = typeof getTranslationText === "function" ? getTranslationText("active_tag", lang) : "Active";
+
+    const formatTrend = (cnt) => cnt > 0 ? `+${cnt} ${tw} ↗` : `0 ${tw}`;
+
+    if (document.getElementById("trendResidents")) document.getElementById("trendResidents").textContent = formatTrend(s.res_week || 0);
+    if (document.getElementById("trendGuardians")) document.getElementById("trendGuardians").textContent = formatTrend(s.grd_week || 0);
+    if (document.getElementById("trendSocietyMembers")) document.getElementById("trendSocietyMembers").textContent = formatTrend(s.soc_mem_week || 0);
+    if (document.getElementById("trendSecurity")) document.getElementById("trendSecurity").textContent = formatTrend(s.sec_week || 0);
+    if (document.getElementById("trendVolunteers")) document.getElementById("trendVolunteers").textContent = formatTrend(s.vol_week || 0);
+    if (document.getElementById("tagActiveAlerts")) document.getElementById("tagActiveAlerts").textContent = `${s.active_alerts_count} ${actStr}`;
+
+    renderRecentAlerts(s.recent_emergencies_formatted);
+}
+window.updateDynamicStatsUI = updateDynamicStatsUI;
+
+function renderNotificationsUI() {
+    const badge = document.getElementById("notifBadge");
+    const container = document.getElementById("notifListContainer");
+
+    const unreadCount = globalNotifications.filter(n => !n.is_read).length;
+    if (badge) badge.textContent = unreadCount;
+
+    if (!container) return;
+
+    if (!globalNotifications || globalNotifications.length === 0) {
+        container.innerHTML = `
+            <div style="padding:24px; text-align:center; color:#64748b;">
+                <i class="fa-regular fa-bell-slash" style="font-size:1.8rem; color:#94a3b8; margin-bottom:8px; display:block;"></i>
+                <strong style="font-size:0.9rem; color:#475569;">There are no recent notifications</strong>
+                <p style="font-size:0.75rem; color:#94a3b8; margin-top:4px; margin-bottom:0;">You're all caught up!</p>
+            </div>
+        `;
+    } else {
+        container.innerHTML = globalNotifications.map(n => `
+            <div class="notif-item-row">
+                <div class="notif-item-icon"><i class="fa-solid fa-bell"></i></div>
+                <div style="flex:1;">
+                    <strong style="font-size:0.85rem; color:#0f172a; display:block;">${n.title}</strong>
+                    <span style="font-size:0.78rem; color:#64748b; display:block;">${n.message}</span>
+                    <span style="font-size:0.7rem; color:#94a3b8; margin-top:2px; display:block;">${n.time_str || ''}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function toggleNotificationsDropdown() {
+    const dropdown = document.getElementById("notificationDropdown");
+    if (dropdown) dropdown.classList.toggle("show");
+}
+
+async function markAllNotificationsRead() {
+    globalNotifications.forEach(n => n.is_read = true);
+    renderNotificationsUI();
+    showLeftToast("All notifications marked as read", "info");
+
+    try {
+        const baseUrl = typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+        await fetch(`${baseUrl}/api/notifications/mark-all-read/`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" }
+        });
+    } catch (e) {
+        console.warn("Could not sync mark-all-read to server:", e);
+    }
+}
+
+function renderRecentAlerts(alerts) {
+    const container = document.getElementById("recentAlertsListContainer");
+    if (!container) return;
+
+    const lang = localStorage.getItem("cc_language") || "en";
+
+    if (!alerts || alerts.length === 0) {
+        container.innerHTML = `
+            <div style="padding:28px; text-align:center; background:#f8fafc; border-radius:18px; border:1px dashed #cbd5e1;">
+                <i class="fa-solid fa-bell-slash" style="font-size:2rem; color:#94a3b8; margin-bottom:8px; display:block;"></i>
+                <strong style="font-size:0.95rem; color:#475569;">${getTranslationText('no_recent_alerts', lang)}</strong>
+                <p style="font-size:0.8rem; color:#94a3b8; margin-top:4px; margin-bottom:0;">${getTranslationText('no_alerts_sub', lang)}</p>
+            </div>
+        `;
+    } else {
+        container.innerHTML = alerts.map(a => {
+            const rawStatus = (a.status || "").toLowerCase();
+            const isAct = rawStatus.includes("active") || rawStatus.includes("progress");
+            const isCancel = rawStatus.includes("cancel");
+
+            let statusKey = "status_resolved";
+            let badgeClass = "badge-resolved-pill";
+            if (isAct) {
+                statusKey = rawStatus.includes("progress") ? "status_in_progress" : "status_active";
+                badgeClass = "badge-active-pill";
+            } else if (isCancel) {
+                statusKey = "status_cancelled";
+                badgeClass = "badge-cancelled-pill";
+            }
+            
+            const translatedStatus = getTranslationText(statusKey, lang);
+
+            let typeKey = "type_medical";
+            if ((a.type || "").toLowerCase().includes("fire")) typeKey = "type_fire";
+            else if ((a.type || "").toLowerCase().includes("security")) typeKey = "type_security";
+
+            const translatedType = getTranslationText(typeKey, lang);
+
+            const iconBg = typeKey === "type_fire" ? "background:#ffedd5; color:#ea580c;"
+                         : typeKey === "type_security" ? "background:#dbeafe; color:#2563eb;"
+                         : "background:#fee2e2; color:#dc2626;";
+
+            return `
+                <div class="recent-alert-row">
+                    <div class="alert-left-box">
+                        <div class="alert-type-icon" style="${iconBg}"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div>
+                            <strong style="font-size:0.9rem; color:#0f172a; display:block;">${translatedType}</strong>
+                            <span style="font-size:0.78rem; color:#64748b;">${a.location} • ${a.time_str}</span>
+                        </div>
+                    </div>
+                    <span class="${badgeClass}">${translatedStatus}</span>
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+function handleGlobalSearch(query) {
+    const overlay = document.getElementById("searchResultsOverlay");
+    if (!overlay) return;
+
+    const q = (query || "").trim().toLowerCase();
+    if (!q || q.length < 2) {
+        overlay.classList.remove("show");
+        overlay.innerHTML = "";
+        return;
+    }
+
+    const navItems = [
+        { name: "Residents List", url: "/dashboard/admin/residents.html", icon: "fa-users" },
+        { name: "Guardians List", url: "/dashboard/admin/guardians.html", icon: "fa-user-shield" },
+        { name: "Society Members", url: "/dashboard/admin/society.html", icon: "fa-people-group" },
+        { name: "Societies Management", url: "/dashboard/admin/society.html", icon: "fa-building" },
+        { name: "Blocks Management", url: "/dashboard/admin/blocks.html", icon: "fa-cubes" },
+        { name: "Flats Management", url: "/dashboard/admin/flats.html", icon: "fa-door-closed" },
+        { name: "Security Personnel", url: "/dashboard/admin/security.html", icon: "fa-shield-halved" },
+        { name: "Volunteers Directory", url: "/dashboard/admin/volunteers.html", icon: "fa-hand-holding-heart" },
+        { name: "Emergency Alerts History", url: "/dashboard/admin/emergency.html", icon: "fa-bell" },
+        { name: "Admin Profile Settings", url: "/dashboard/admin/profile.html", icon: "fa-gear" },
+    ];
+
+    const matches = navItems.filter(item => item.name.toLowerCase().includes(q));
+
+    if (matches.length === 0) {
+        overlay.innerHTML = `<div style="padding:14px; text-align:center; color:#64748b; font-size:0.85rem;">No matching modules found for "<strong>${query}</strong>"</div>`;
+    } else {
+        overlay.innerHTML = matches.map(m => `
+            <a href="${m.url}" class="search-item-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid ${m.icon}" style="color:#0284c7; width:18px;"></i>
+                    <span style="font-weight:600; font-size:0.88rem;">${m.name}</span>
+                </div>
+                <i class="fa-solid fa-arrow-right text-muted" style="font-size:0.75rem;"></i>
+            </a>
+        `).join('');
+    }
+    overlay.classList.add("show");
+}
+
+function openAdminQuickModal(type) {
+    const modal = document.getElementById("adminQuickModal");
+    const title = document.getElementById("adminQuickModalTitle");
+    const entityInput = document.getElementById("quickEntityType");
+    const fieldsContainer = document.getElementById("quickFormFields");
+
+    if (!modal) return;
+
+    entityInput.value = type;
+    const titles = {
+        residents: "Add New Resident",
+        guardians: "Add New Guardian",
+        society_members: "Add New Society Member",
+        societies: "Add New Society",
+        blocks: "Add New Block",
+        flats: "Add New Flat",
+        security: "Add Security Personnel",
+        volunteers: "Add New Volunteer"
+    };
+
+    title.textContent = titles[type] || "Add New Entry";
+
+    let html = "";
+    if (type === "residents" || type === "guardians" || type === "society_members" || type === "security" || type === "volunteers") {
+        html = `
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">First Name *</label>
+                <input type="text" id="quickFirstName" class="form-input-control" placeholder="Enter first name" required>
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">Last Name</label>
+                <input type="text" id="quickLastName" class="form-input-control" placeholder="Enter last name">
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">Mobile Phone *</label>
+                <input type="tel" id="quickPhone" class="form-input-control" placeholder="Enter mobile number" required>
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">Email (Optional)</label>
+                <input type="email" id="quickEmail" class="form-input-control" placeholder="Enter email address">
+            </div>
+        `;
+    } else if (type === "societies") {
+        html = `
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">Society Name *</label>
+                <input type="text" id="quickName" class="form-input-control" placeholder="e.g. CareConnect Heights" required>
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">City / Location</label>
+                <input type="text" id="quickCity" class="form-input-control" placeholder="e.g. Bangalore">
+            </div>
+        `;
+    } else if (type === "blocks") {
+        html = `
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">Block Name / Code *</label>
+                <input type="text" id="quickName" class="form-input-control" placeholder="e.g. Block A" required>
+            </div>
+        `;
+    } else if (type === "flats") {
+        html = `
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">Flat Number *</label>
+                <input type="text" id="quickName" class="form-input-control" placeholder="e.g. Flat 101" required>
+            </div>
+        `;
+    }
+
+    fieldsContainer.innerHTML = html;
+    modal.style.display = "flex";
+}
+
+function closeAdminQuickModal() {
+    const modal = document.getElementById("adminQuickModal");
+    if (modal) modal.style.display = "none";
+}
+
+async function handleAdminQuickSubmit(e) {
+    e.preventDefault();
+    const type = document.getElementById("quickEntityType").value;
+
+    const firstName = document.getElementById("quickFirstName") ? document.getElementById("quickFirstName").value.trim() : "";
+    const lastName = document.getElementById("quickLastName") ? document.getElementById("quickLastName").value.trim() : "";
+    const phone = document.getElementById("quickPhone") ? document.getElementById("quickPhone").value.trim() : "";
+    const email = document.getElementById("quickEmail") ? document.getElementById("quickEmail").value.trim() : "";
+    const name = document.getElementById("quickName") ? document.getElementById("quickName").value.trim() : `${firstName} ${lastName}`.trim();
+
+    closeAdminQuickModal();
+
+    try {
+        const baseUrl = typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+        await fetch(`${baseUrl}/api/users/save/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ role: type, first_name: firstName, last_name: lastName, name: name, phone: phone, email: email })
+        });
+    } catch (err) {
+        console.warn("Save quick entry notice:", err);
+    }
+
+    showLeftToast(`${type.replace('_', ' ').toUpperCase()} created successfully!`, "success");
+    fetchAdminStats();
+}
+
+function showLeftToast(message, type = "success") {
+    const container = document.getElementById("leftToastContainer");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.className = `left-toast-card toast-${type}`;
+    const icon = type === "success" ? "fa-circle-check" : (type === "error" ? "fa-circle-xmark" : "fa-circle-info");
+    const iconColor = type === "success" ? "#10b981" : (type === "error" ? "#ef4444" : "#0284c7");
+
+    toast.innerHTML = `
+        <i class="fa-solid ${icon}" style="font-size:1.2rem; color:${iconColor}; flex-shrink:0;"></i>
+        <div style="flex:1;">
+            <strong style="font-size:0.88rem; color:#0f172a; display:block;">${type.toUpperCase()}</strong>
+            <span style="font-size:0.8rem; color:#475569;">${message}</span>
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem;">&times;</button>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        if (toast.parentElement) toast.remove();
+    }, 3800);
+}
+
+window.showLeftToast = showLeftToast;
+</script>
+</body>
+</html>

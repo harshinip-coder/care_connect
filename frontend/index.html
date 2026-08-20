@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareConnect | Sign In</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/fontawesome-fallback.css">
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+
+<div class="login-card-container">
+
+    <!-- LEFT PANEL — DARK NAVY GRADIENT & BRAND STORY -->
+    <section class="login-left-panel">
+        
+        <!-- Brand Header -->
+        <div class="brand-header">
+            <img src="/careconnect-logo.png" alt="CareConnect Logo" class="brand-logo-img" onerror="this.src='/images/careconnect-logo.png'">
+            <div class="brand-text-box">
+                <h1>Care<span>Connect</span></h1>
+                <p>Community Safety, Connected</p>
+            </div>
+        </div>
+
+        <!-- Headline & Story -->
+        <div class="left-headline-box">
+            <h2>Together,<br>We Create<br><span class="highlight-cyan">Safer</span> Communities</h2>
+            <p>CareConnect helps residents, guardians, volunteers and security teams work together for a safer and stronger community.</p>
+        </div>
+
+        <!-- Central Night Family Illustration -->
+        <div class="illustration-center-wrapper">
+            <img src="/images/night-family-illustration.svg" alt="Night Family Shield" class="night-bg-illustration">
+        </div>
+
+        <!-- 3 Feature Bullets -->
+        <div class="feature-bullets-list">
+            <div class="feature-bullet-item">
+                <div class="feature-icon-circle bg-teal-glow">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="feature-text-info">
+                    <strong>Instant SOS Alerts</strong>
+                    <span>Get help in emergencies with one tap.</span>
+                </div>
+            </div>
+
+            <div class="feature-bullet-item">
+                <div class="feature-icon-circle bg-blue-glow">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="feature-text-info">
+                    <strong>Community Connected</strong>
+                    <span>Stay connected with your society members and teams.</span>
+                </div>
+            </div>
+
+            <div class="feature-bullet-item">
+                <div class="feature-icon-circle bg-purple-glow">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div class="feature-text-info">
+                    <strong>Real-time Notifications</strong>
+                    <span>Receive important alerts and updates instantly.</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- RIGHT PANEL — CLEAN WHITE FORM CARD -->
+    <section class="login-right-panel">
+        
+        <!-- Top Circle Avatar -->
+        <div class="top-avatar-circle">
+            <img src="/careconnect-logo.png" alt="CareConnect Logo" class="avatar-heart-logo" onerror="this.src='/images/careconnect-logo.png'">
+        </div>
+
+        <!-- Backend Server Connection Status Alert (Populated dynamically via JS) -->
+        <div id="serverStatusContainer" style="display:none; margin-bottom:16px;"></div>
+
+        <!-- Welcome Text -->
+        <div class="welcome-header-text">
+            <h2 data-i18n="login_title">Sign In to CareConnect</h2>
+            <p data-i18n="welcome_sub">Glad to see you again! Stay safe, stay connected.</p>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="login-form-body">
+            
+            <!-- Username Input -->
+            <div class="form-group-field">
+                <label for="usernameInput" class="field-label" data-i18n="username_label">
+                    <i class="fa-regular fa-user"></i> Username or Email
+                </label>
+                <div class="input-with-icon-box">
+                    <i class="fa-regular fa-user input-left-icon"></i>
+                    <input type="text" id="usernameInput" class="form-input-control" placeholder="Enter your username" required autocomplete="username">
+                </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-group-field">
+                <label for="passwordInput" class="field-label" data-i18n="password_label">
+                    <i class="fa-solid fa-lock"></i> Password
+                </label>
+                <div class="input-with-icon-box">
+                    <i class="fa-solid fa-lock input-left-icon"></i>
+                    <input type="password" id="passwordInput" class="form-input-control" placeholder="Enter your password" required autocomplete="current-password">
+                    <i class="fa-regular fa-eye toggle-password-icon" id="togglePasswordBtn" title="Toggle password visibility"></i>
+                </div>
+            </div>
+
+            <!-- Options Row -->
+            <div class="form-options-row">
+                <label class="remember-me-checkbox">
+                    <input type="checkbox" id="rememberMe" checked> Remember me
+                </label>
+                <a href="/forgot-password.html" class="forgot-password-link" data-i18n="forgot_password_title">Forgot Password?</a>
+            </div>
+
+            <!-- Login Button -->
+            <button type="submit" class="btn-gradient-login" data-i18n="login_btn">
+                <i class="fa-solid fa-lock"></i> Sign In
+            </button>
+
+            <!-- OR Divider -->
+            <div class="or-divider-line">
+                <span class="or-divider-badge">OR</span>
+            </div>
+
+            <!-- Register Link -->
+            <p class="register-redirect-text">
+                <span data-i18n="dont_have_account">Don't have an account?</span> <a href="/register.html" class="register-redirect-link" data-i18n="register_link">Create one now</a>
+            </p>
+        </form>
+
+    </section>
+
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/login.js"></script>
+</body>
+</html>

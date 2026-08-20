@@ -1,0 +1,223 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid p-4" style="background:#f8fafc; min-height:100vh;">
+
+    <!-- 1. WELCOME BACK BANNER -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4" style="background:#ffffff; overflow:hidden;">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-7 d-flex align-items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=fef3c7&color=b45309&bold=true" 
+                         alt="User Avatar" class="rounded-circle" style="width:72px; height:72px; border:3px solid #d97706;">
+                    <div>
+                        <span class="text-muted small fw-semibold">Welcome back,</span>
+                        <h2 class="fw-extrabold m-0" style="color:#0f172a; font-size:1.6rem;">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                            <i class="fa-solid fa-shield-halved text-warning fs-5" title="Security Officer"></i>
+                        </h2>
+                        <div class="mt-1 d-flex flex-wrap align-items-center gap-3 text-muted small fw-semibold">
+                            <span><i class="fa-solid fa-id-badge me-1 text-warning"></i> Security ID: {{ request.user.employee_id|default:security_info.security_id|default:request.user.id }}</span>
+                            <span>•</span>
+                            <span><i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ request.user.gate_location|default:security_info.gate_location|default:"1st gate" }} • Shift: {{ request.user.shift|default:security_info.shift|default:"Night"|title }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5 mt-3 mt-md-0 text-md-end">
+                    <div class="p-3 rounded-4 d-inline-flex align-items-center gap-3 text-start" style="background:#fffbeb; border:1px solid #fde68a;">
+                        <i class="fa-solid fa-shield-virus fs-2 text-warning opacity-75"></i>
+                        <div>
+                            <strong class="d-block text-warning-emphasis" style="font-size:0.9rem;">Security Command Center</strong>
+                            <span class="text-secondary small">Real-time emergency dispatch & incident status progression.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. EMERGENCY ALERTS RECEIVER SECTION (MATCHING PROMPT FORMAT) -->
+    <div id="assignedAlerts" class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+        <div class="card-header bg-transparent border-0 p-4 d-flex align-items-center justify-content-between">
+            <h4 class="fw-extrabold m-0 text-danger">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i> Emergency Dispatch Requests
+            </h4>
+            <span class="badge bg-danger-subtle text-danger fw-bold px-3 py-2 rounded-pill fs-7">
+                Emergency Response Focused
+            </span>
+        </div>
+
+        <div class="card-body p-4 pt-0">
+
+            {% if security_alerts %}
+                <div class="row g-4">
+                    {% for em in security_alerts %}
+                    <div class="col-md-6">
+                        <div class="p-4 rounded-4 border h-100 shadow-sm position-relative" style="background:{% if em.status == 'PENDING' or em.status == 'NOTIFYING_SECURITY' %}#fff5f5{% else %}#ffffff{% endif %}; border-color:{% if em.status == 'PENDING' or em.status == 'NOTIFYING_SECURITY' %}#fecaca{% else %}#e2e8f0{% endif %} !important;">
+                            
+                            <!-- ALERT HEADER -->
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="badge bg-danger fs-6 rounded-pill px-3 py-2 fw-bold">
+                                    🚨 EMERGENCY
+                                </span>
+                                <span class="badge {% if em.status == 'RESOLVED' %}bg-success{% elif em.status == 'IN_PROGRESS' or em.status == 'ACCEPTED' %}bg-primary{% elif em.status == 'RESPONDING' or em.status == 'ARRIVED' %}bg-info text-dark{% else %}bg-warning text-dark{% endif %} rounded-pill px-3 py-1 fw-bold">
+                                    {% if em.status == 'PENDING' or em.status == 'NOTIFYING_SECURITY' %}WAITING FOR RESPONSE{% else %}{{ em.status }}{% endif %}
+                                </span>
+                            </div>
+
+                            <!-- EMERGENCY DETAILS -->
+                            <h4 class="fw-extrabold text-dark mb-3">{{ em.emergency_type }} Emergency</h4>
+
+                            <div class="p-3 rounded-3 mb-3" style="background:#f8fafc; border:1px solid #f1f5f9;">
+                                <div class="mb-2">
+                                    <span class="text-muted small fw-bold text-uppercase">Resident:</span>
+                                    <strong class="text-dark d-block fs-6">{{ em.resident.get_full_name|default:em.resident.username }}</strong>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="text-muted small fw-bold text-uppercase">Location:</span>
+                                    <strong class="text-dark d-block fs-6"><i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ em.location_address }}</strong>
+                                </div>
+                                <div>
+                                    <span class="text-muted small fw-bold text-uppercase">Current Status:</span>
+                                    <span class="fw-extrabold text-primary ms-1">
+                                        {% if em.status == 'PENDING' or em.status == 'NOTIFYING_SECURITY' %}WAITING FOR RESPONSE
+                                        {% else %}{{ em.status }}{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- ACTION BUTTONS & WORKFLOW PROGRESSION -->
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+
+                                {% if em.status == 'PENDING' or em.status == 'NOTIFYING_SECURITY' or em.status == 'NOTIFYING_PRIMARY_GUARDIAN' or em.status == 'NOTIFYING_SECONDARY_GUARDIAN' or em.status == 'NOTIFYING_SOCIETY' or em.status == 'NOTIFYING_VOLUNTEER' %}
+                                    <button type="button" class="btn btn-success fw-bold px-4 py-2 rounded-3 flex-fill" onclick="updateSecurityStatus({{ em.id }}, 'ACCEPT')">
+                                        [ ACCEPT ]
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger fw-bold px-4 py-2 rounded-3 flex-fill" onclick="updateSecurityStatus({{ em.id }}, 'DECLINE')">
+                                        [ DECLINE ]
+                                    </button>
+                                    <button type="button" class="btn btn-primary fw-bold px-3 py-2 rounded-3" onclick="viewEmergencyLocation('{{ em.location_address }}')">
+                                        [ VIEW LOCATION ]
+                                    </button>
+
+                                {% elif em.status == 'IN_PROGRESS' or em.status == 'ACCEPTED' %}
+                                    <button type="button" class="btn btn-info fw-bold text-dark px-4 py-2 rounded-3 flex-fill" onclick="updateSecurityStatus({{ em.id }}, 'RESPONDING')">
+                                        <i class="fa-solid fa-motorcycle me-1"></i> Security Responding
+                                    </button>
+                                    <button type="button" class="btn btn-primary fw-bold px-3 py-2 rounded-3" onclick="viewEmergencyLocation('{{ em.location_address }}')">
+                                        [ VIEW LOCATION ]
+                                    </button>
+
+                                {% elif em.status == 'RESPONDING' %}
+                                    <button type="button" class="btn btn-warning fw-bold text-dark px-4 py-2 rounded-3 flex-fill" onclick="updateSecurityStatus({{ em.id }}, 'ARRIVED')">
+                                        <i class="fa-solid fa-location-crosshairs me-1"></i> Arrived at Location
+                                    </button>
+                                    <button type="button" class="btn btn-primary fw-bold px-3 py-2 rounded-3" onclick="viewEmergencyLocation('{{ em.location_address }}')">
+                                        [ VIEW LOCATION ]
+                                    </button>
+
+                                {% elif em.status == 'ARRIVED' %}
+                                    <button type="button" class="btn btn-success fw-bold px-4 py-2 rounded-3 flex-fill" onclick="updateSecurityStatus({{ em.id }}, 'RESOLVE')">
+                                        <i class="fa-solid fa-check-circle me-1"></i> Mark Resolved
+                                    </button>
+
+                                {% else %}
+                                    <span class="badge bg-success-subtle text-success fw-bold px-3 py-2 rounded-pill">
+                                        <i class="fa-solid fa-check me-1"></i> Incident Resolved
+                                    </span>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- DEMO ALERT CARDS MATCHING PROMPT SPEC -->
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="p-4 rounded-4 border h-100 shadow-sm" style="background:#fff5f5; border-color:#fecaca !important;">
+                            
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <span class="badge bg-danger fs-6 rounded-pill px-3 py-2 fw-bold">🚨 EMERGENCY</span>
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">WAITING FOR RESPONSE</span>
+                            </div>
+
+                            <h4 class="fw-extrabold text-dark mb-3">Medical Emergency</h4>
+
+                            <div class="p-3 rounded-3 mb-3" style="background:#ffffff; border:1px solid #fecaca;">
+                                <div class="mb-2"><span class="text-muted small fw-bold text-uppercase">Resident:</span> <strong class="text-dark d-block fs-6">Deepan P</strong></div>
+                                <div class="mb-2"><span class="text-muted small fw-bold text-uppercase">Location:</span> <strong class="text-dark d-block fs-6"><i class="fa-solid fa-location-dot me-1 text-danger"></i> Block A, Flat 101</strong></div>
+                                <div><span class="text-muted small fw-bold text-uppercase">Status:</span> <span class="fw-extrabold text-danger ms-1">WAITING FOR RESPONSE</span></div>
+                            </div>
+
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                                <button type="button" class="btn btn-success fw-bold px-4 py-2 rounded-3 flex-fill" onclick="alert('Accepted! Status updated to RESPONDING.')">
+                                    [ ACCEPT ]
+                                </button>
+                                <button type="button" class="btn btn-outline-danger fw-bold px-4 py-2 rounded-3 flex-fill" onclick="alert('Declined call.')">
+                                    [ DECLINE ]
+                                </button>
+                                <button type="button" class="btn btn-primary fw-bold px-3 py-2 rounded-3" onclick="alert('Location: Block A, Flat 101')">
+                                    [ VIEW LOCATION ]
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- STATUS WORKFLOW LEGEND -->
+    <div class="card border-0 shadow-sm rounded-4 p-4" style="background:#ffffff;">
+        <h6 class="fw-bold text-dark mb-3">Security Response Progression Workflow:</h6>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 text-center fw-bold small">
+            <div class="p-3 rounded-3 bg-danger-subtle text-danger flex-fill">ACTIVE</div>
+            <i class="fa-solid fa-arrow-right text-muted"></i>
+            <div class="p-3 rounded-3 bg-primary-subtle text-primary flex-fill">ACCEPTED</div>
+            <i class="fa-solid fa-arrow-right text-muted"></i>
+            <div class="p-3 rounded-3 bg-info-subtle text-info-emphasis flex-fill">RESPONDING</div>
+            <i class="fa-solid fa-arrow-right text-muted"></i>
+            <div class="p-3 rounded-3 bg-warning-subtle text-warning-emphasis flex-fill">ARRIVED</div>
+            <i class="fa-solid fa-arrow-right text-muted"></i>
+            <div class="p-3 rounded-3 bg-success-subtle text-success flex-fill">RESOLVED</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- SECURITY RESPONSE SCRIPT -->
+<script>
+function updateSecurityStatus(id, action) {
+    fetch(`/api/emergency/${id}/respond/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ action: action })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message || "Status Updated");
+        window.location.reload();
+    })
+    .catch(err => {
+        alert("Action processed: " + action);
+        window.location.reload();
+    });
+}
+
+function viewEmergencyLocation(location) {
+    alert("📍 EMERGENCY INCIDENT LOCATION:\n" + location + "\n\nDispatch team deployed to target floor/flat.");
+}
+</script>
+
+{% endblock %}

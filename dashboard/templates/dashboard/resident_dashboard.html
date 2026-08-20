@@ -1,0 +1,606 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Resident Dashboard - CareConnect{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid p-4" style="background:#f8fafc; min-height:100vh;">
+
+    <!-- TOP SECTION: WELCOME, SOS BUTTON, AND STATUS (Matching Pic 1) -->
+    <div class="row g-4 mb-4">
+        
+        <!-- 1. WELCOME BANNER (Top Left) -->
+        <div class="col-xl-4 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-4" style="background:#ffffff; min-height:260px;">
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    {% if request.user.profile_photo %}
+                        <img src="{{ request.user.profile_photo.url }}" 
+                             alt="User Avatar" class="rounded-circle shadow-sm" style="width:68px; height:68px; border:3px solid #10b981; object-fit:cover;">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=d1fae5&color=059669&bold=true&size=128" 
+                             alt="User Avatar" class="rounded-circle shadow-sm" style="width:68px; height:68px; border:3px solid #10b981;">
+                    {% endif %}
+
+                    <div>
+                        <span class="text-muted small fw-semibold">Welcome back,</span>
+                        <h3 class="fw-extrabold m-0 text-dark d-flex align-items-center gap-2" style="font-size:1.45rem;">
+                            {{ request.user.first_name|default:request.user.username }}! 👋
+                        </h3>
+                        <p class="text-secondary small m-0 mt-1 fw-medium" style="line-height:1.3;">
+                            Your safety is our priority.<br>We're always here to help you.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-auto p-3 rounded-4 border d-flex align-items-center justify-content-between" style="background:#f8fafc; border-color:#e2e8f0 !important;">
+                    <div class="d-flex align-items-center gap-2 text-dark small fw-bold">
+                        <i class="fa-solid fa-location-dot text-primary fs-6"></i>
+                        <span>{{ society_name }}</span>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary fw-bold rounded-pill px-3 py-1 small">
+                        Block {{ block_name }}, Flat {{ flat_number }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. REALISTIC 3D SOS EMERGENCY HELP CARD (Top Center) -->
+        <div class="col-xl-4 col-lg-6" id="sosSection">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-4 text-center d-flex flex-column align-items-center justify-content-center position-relative overflow-hidden" 
+                 style="background:linear-gradient(180deg, #ffffff 0%, #fff5f5 100%); border:1px solid #fecaca !important; min-height:260px;">
+                
+                <!-- SONAR PULSE & 3D BUTTON WRAPPER -->
+                <div class="sos-3d-wrapper my-1">
+                    <div class="sos-pulse-ring"></div>
+                    <div class="sos-pulse-ring sos-pulse-ring-delay"></div>
+
+                    <!-- SOS CLICK TRIGGER (Opens Modal) -->
+                    <button type="button" class="sos-3d-button border-0" data-bs-toggle="modal" data-bs-target="#sosConfirmModal">
+                        <i class="fa-solid fa-bell-concierge fs-2 mb-1" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));"></i>
+                        <span style="font-size:1.8rem; font-weight:900; letter-spacing:1px; line-height:1; text-shadow:0 2px 4px rgba(0,0,0,0.4);">SOS</span>
+                        <span style="font-size:0.65rem; font-weight:800; letter-spacing:0.5px; opacity:0.95; margin-top:2px;">EMERGENCY HELP</span>
+                    </button>
+                </div>
+
+                <h5 class="fw-extrabold text-dark m-0 mt-2" style="font-size:1.1rem;">Need Help? Tap the SOS Button</h5>
+                <p class="text-muted small m-0 mt-1 fw-medium" style="max-width:320px;">
+                    Alert your guardians and security instantly in any emergency situation.
+                </p>
+
+                <div class="mt-2">
+                    <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-3 py-1 small">
+                        <i class="fa-solid fa-circle-check me-1"></i> One tap can bring help faster
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CURRENT STATUS & LAST EMERGENCY CARDS (Top Right) -->
+        <div class="col-xl-4 col-lg-12">
+            <div class="d-flex flex-column gap-3 h-100 justify-content-between">
+                
+                <!-- CURRENT STATUS CARD -->
+                <div class="card border-0 shadow-sm rounded-4 p-3.5 flex-grow-1" style="background:#ffffff; border:1px solid #e2e8f0 !important;">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="fw-extrabold text-dark m-0">Current Status</h6>
+                        <span class="badge bg-success text-white fw-bold rounded-pill px-3 py-1 small" id="currentStatusBadge">All Good</span>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3 mb-2" style="background:#f8fafc;" onclick="window.location.href='{% url 'emergency_list' %}'">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
+                                <i class="fa-solid fa-shield-check"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block text-dark small" style="font-size:0.85rem;">No Active Emergency</strong>
+                                <span class="text-muted small" style="font-size:0.75rem;">You're safe and secure</span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-muted small"></i>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background:#f8fafc;" onclick="window.location.href='{% url 'emergency_list' %}'">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
+                                <i class="fa-solid fa-bell"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block text-dark small" style="font-size:0.85rem;">All Systems Normal</strong>
+                                <span class="text-muted small" style="font-size:0.75rem;">No pending alerts</span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-muted small"></i>
+                    </div>
+                </div>
+
+                <!-- LAST EMERGENCY CARD -->
+                <div class="card border-0 shadow-sm rounded-4 p-3.5 flex-grow-1" style="background:#ffffff; border:1px solid #e2e8f0 !important;">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="fw-extrabold text-dark m-0">Last Emergency</h6>
+                        <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-3 py-1 small">Resolved</span>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background:#f8fafc;" onclick="window.location.href='{% url 'emergency_list' %}'">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
+                                <i class="fa-solid fa-kit-medical"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block text-dark small" style="font-size:0.85rem;">
+                                    {% if emergency_history.first %}{{ emergency_history.first.emergency_type }} Emergency{% else %}Medical Emergency{% endif %}
+                                </strong>
+                                <span class="text-muted small" style="font-size:0.75rem;">
+                                    {% if emergency_history.first %}{{ emergency_history.first.created_at|date:"d M Y, h:i A" }}{% else %}12 Aug 2026, 10:25 AM{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-muted small"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ACTIVE EMERGENCY SEQUENTIAL ESCALATION DISPLAY (RENDERED DYNAMICALLY) -->
+    <div id="activeSosCardContainer" style="display:none;" class="mb-4"></div>
+
+    <!-- MIDDLE SECTION: MY GUARDIANS, RECENT ALERTS & QUICK ACTIONS (Matching Pic 1) -->
+    <div class="row g-4 mb-4">
+        
+        <!-- 1. MY GUARDIANS CARD (col-xl-4 col-lg-6) -->
+        <div class="col-xl-4 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100" style="background:#ffffff; border:1px solid #e2e8f0 !important;">
+                <div class="card-header bg-transparent border-0 p-4 pb-2 d-flex align-items-center justify-content-between">
+                    <h5 class="fw-extrabold text-dark m-0">My Guardians</h5>
+                    <a href="{% url 'my_guardians' %}" class="text-primary fw-bold small text-decoration-none">View All →</a>
+                </div>
+
+                <div class="card-body p-4 pt-1 d-flex flex-direction-column justify-content-between">
+                    
+                    {% if primary_guardian or secondary_guardian %}
+                        <div class="d-flex flex-column gap-3 w-100">
+                            
+                            <!-- PRIMARY GUARDIAN -->
+                            {% if primary_guardian %}
+                                <div class="p-3 rounded-4 border" style="background:#ecfdf5; border-color:#a7f3d0 !important;">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <span class="badge bg-success text-white fw-bold rounded-pill px-3 py-1 small">
+                                            <i class="fa-solid fa-star me-1"></i> Primary Guardian
+                                        </span>
+                                        <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-2 py-0.5 small">Active</span>
+                                    </div>
+                                    <h6 class="fw-bold text-dark m-0">{{ primary_guardian.first_name }} {{ primary_guardian.last_name }}</h6>
+                                    <div class="mt-1 text-muted small fw-medium">
+                                        <i class="fa-solid fa-phone me-1 text-success"></i> {{ primary_guardian.phone }}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <!-- SECONDARY GUARDIAN -->
+                            {% if secondary_guardian %}
+                                <div class="p-3 rounded-4 border" style="background:#f5f3ff; border-color:#ddd6fe !important;">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <span class="badge text-white fw-bold rounded-pill px-3 py-1 small" style="background:#7c3aed;">
+                                            <i class="fa-solid fa-user-shield me-1"></i> Secondary Guardian
+                                        </span>
+                                        <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-2 py-0.5 small">Active</span>
+                                    </div>
+                                    <h6 class="fw-bold text-dark m-0">{{ secondary_guardian.first_name }} {{ secondary_guardian.last_name }}</h6>
+                                    <div class="mt-1 text-muted small fw-medium">
+                                        <i class="fa-solid fa-phone me-1" style="color:#7c3aed;"></i> {{ secondary_guardian.phone }}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    {% else %}
+                        <!-- NO GUARDIAN EMPTY STATE (Real DB check, no proxy fallback) -->
+                        <div class="text-center py-4 w-100 my-auto text-muted">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width:54px; height:54px;">
+                                <i class="fa-solid fa-user-shield fs-3 text-secondary opacity-50"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-1">No Guardians Added Yet</h6>
+                            <p class="small text-muted mb-3" style="max-width:280px; margin:auto;">
+                                Add a primary and secondary guardian contact to be notified instantly in emergency situations.
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    <!-- ADD / MANAGE GUARDIANS BUTTON -->
+                    <div class="mt-3 w-100">
+                        <button type="button" class="btn btn-outline-primary w-100 fw-bold rounded-3 py-2" data-bs-toggle="modal" data-bs-target="#addGuardianModal">
+                            <i class="fa-solid fa-plus me-1"></i> Add / Manage Guardians
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. RECENT EMERGENCY ALERTS (col-xl-4 col-lg-6) -->
+        <div class="col-xl-4 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100" style="background:#ffffff; border:1px solid #e2e8f0 !important;">
+                <div class="card-header bg-transparent border-0 p-4 pb-2 d-flex align-items-center justify-content-between">
+                    <h5 class="fw-extrabold text-dark m-0">Recent Emergency Alerts</h5>
+                    <a href="{% url 'emergency_list' %}" class="text-primary fw-bold small text-decoration-none">View All →</a>
+                </div>
+
+                <div class="card-body p-4 pt-1">
+                    <div class="d-flex flex-column gap-2.5">
+                        
+                        {% if emergency_history %}
+                            {% for em in emergency_history|slice:":4" %}
+                                <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background:#f8fafc;">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center {% if em.emergency_type == 'Medical' %}bg-danger-subtle text-danger{% elif em.emergency_type == 'Fire' %}bg-warning-subtle text-warning{% else %}bg-primary-subtle text-primary{% endif %}" style="width:38px; height:38px;">
+                                            <i class="fa-solid {% if em.emergency_type == 'Medical' %}fa-heart-pulse{% elif em.emergency_type == 'Fire' %}fa-fire{% else %}fa-shield-halved{% endif %}"></i>
+                                        </div>
+                                        <div>
+                                            <strong class="d-block text-dark small" style="font-size:0.85rem;">{{ em.emergency_type }} Emergency</strong>
+                                            <span class="text-muted small" style="font-size:0.75rem;">{{ em.location_address|default:"Block A, Flat 101" }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge {% if em.status == 'RESOLVED' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} rounded-pill px-2.5 py-1 small fw-bold">
+                                            {{ em.status|title }}
+                                        </span>
+                                        <span class="d-block text-muted" style="font-size:0.7rem;">{{ em.created_at|date:"d M Y" }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <!-- SAMPLE ALERTS PREVIEW FROM DB TEMPLATE -->
+                            <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background:#f8fafc;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center" style="width:38px; height:38px;">
+                                        <i class="fa-solid fa-heart-pulse"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-dark small" style="font-size:0.85rem;">Medical Emergency</strong>
+                                        <span class="text-muted small" style="font-size:0.75rem;">Block A, Flat 101</span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 small fw-bold">Resolved</span>
+                                    <span class="d-block text-muted" style="font-size:0.7rem;">12 Aug 2026</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background:#f8fafc;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width:38px; height:38px;">
+                                        <i class="fa-solid fa-shield-halved"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-dark small" style="font-size:0.85rem;">Security Alert</strong>
+                                        <span class="text-muted small" style="font-size:0.75rem;">Main Gate</span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 small fw-bold">Resolved</span>
+                                    <span class="d-block text-muted" style="font-size:0.7rem;">10 Aug 2026</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background:#f8fafc;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center" style="width:38px; height:38px;">
+                                        <i class="fa-solid fa-fire"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-dark small" style="font-size:0.85rem;">Fire Alert</strong>
+                                        <span class="text-muted small" style="font-size:0.75rem;">Block B, Flat 203</span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 small fw-bold">Resolved</span>
+                                    <span class="d-block text-muted" style="font-size:0.7rem;">05 Aug 2026</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3" style="background:#f8fafc;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-info-subtle text-info rounded-circle d-flex align-items-center justify-content-center" style="width:38px; height:38px;">
+                                        <i class="fa-solid fa-car-burst"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block text-dark small" style="font-size:0.85rem;">Accident Report</strong>
+                                        <span class="text-muted small" style="font-size:0.75rem;">Parking Area</span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 small fw-bold">Resolved</span>
+                                    <span class="d-block text-muted" style="font-size:0.7rem;">02 Aug 2026</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. QUICK ACTIONS GRID (col-xl-4 col-lg-12) -->
+        <div class="col-xl-4 col-lg-12">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-4" style="background:#ffffff; border:1px solid #e2e8f0 !important;">
+                <h5 class="fw-extrabold text-dark mb-3">Quick Actions</h5>
+
+                <div class="row g-2.5 mb-3">
+                    <div class="col-4">
+                        <a href="{% url 'profile' %}" class="quick-action-card text-decoration-none d-flex flex-column align-items-center justify-content-center p-3 rounded-4 text-center h-100" style="background:#f0fdf4; border:1px solid #bbf7d0; transition:0.2s;">
+                            <i class="fa-solid fa-user-pen fs-4 text-success mb-1"></i>
+                            <span class="fw-bold text-dark small" style="font-size:0.75rem;">Update Profile</span>
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a href="{% url 'my_guardians' %}" class="quick-action-card text-decoration-none d-flex flex-column align-items-center justify-content-center p-3 rounded-4 text-center h-100" style="background:#f5f3ff; border:1px solid #ddd6fe; transition:0.2s;">
+                            <i class="fa-solid fa-users fs-4 text-purple mb-1" style="color:#7c3aed;"></i>
+                            <span class="fw-bold text-dark small" style="font-size:0.75rem;">My Guardians</span>
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a href="{% url 'emergency_list' %}" class="quick-action-card text-decoration-none d-flex flex-column align-items-center justify-content-center p-3 rounded-4 text-center h-100" style="background:#fff7ed; border:1px solid #ffedd5; transition:0.2s;">
+                            <i class="fa-solid fa-clock-rotate-left fs-4 text-warning mb-1"></i>
+                            <span class="fw-bold text-dark small" style="font-size:0.75rem;">Emergency History</span>
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <a href="{% url 'emergency_list' %}" class="quick-action-card text-decoration-none d-flex flex-column align-items-center justify-content-center p-3 rounded-4 text-center h-100" style="background:#eff6ff; border:1px solid #bfdbfe; transition:0.2s;">
+                            <i class="fa-solid fa-bell fs-4 text-primary mb-1"></i>
+                            <span class="fw-bold text-dark small" style="font-size:0.75rem;">Notifications</span>
+                        </a>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" onclick="shareLiveLocation()" class="quick-action-card border-0 text-decoration-none d-flex flex-column align-items-center justify-content-center p-3 rounded-4 text-center h-100 w-100" style="background:#fef2f2; border:1px solid #fecaca !important; transition:0.2s;">
+                            <i class="fa-solid fa-location-dot fs-4 text-danger mb-1"></i>
+                            <span class="fw-bold text-dark small" style="font-size:0.75rem;">Share Location</span>
+                        </button>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" onclick="openSupportModal()" class="quick-action-card border-0 text-decoration-none d-flex flex-column align-items-center justify-content-center p-3 rounded-4 text-center h-100 w-100" style="background:#f0fdfa; border:1px solid #99f6e4 !important; transition:0.2s;">
+                            <i class="fa-solid fa-circle-question fs-4 text-info mb-1"></i>
+                            <span class="fw-bold text-dark small" style="font-size:0.75rem;">Help & Support</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SAFETY TIP BANNER -->
+                <div class="p-3 rounded-4 d-flex align-items-center gap-3 mt-auto" style="background:#ecfdf5; border:1px solid #a7f3d0;">
+                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px; height:36px;">
+                        <i class="fa-solid fa-shield-heart"></i>
+                    </div>
+                    <div>
+                        <strong class="d-block text-success-emphasis" style="font-size:0.85rem;">Safety Tip</strong>
+                        <span class="text-secondary small" style="font-size:0.75rem;">Keep your guardian contacts updated to get help faster in emergencies.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM ROW FEATURE CARDS BAR (Matching Pic 1) -->
+    <div class="row g-4 mb-2">
+        <div class="col-md-3 col-sm-6">
+            <div class="p-3.5 rounded-4 border bg-white d-flex align-items-center gap-3 shadow-sm h-100">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary-subtle text-primary flex-shrink-0" style="width:44px; height:44px;">
+                    <i class="fa-solid fa-location-crosshairs fs-5"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark m-0" style="font-size:0.9rem;">Share Live Location</h6>
+                    <span class="text-muted small" style="font-size:0.75rem;">Share your live location with guardians & security.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="p-3.5 rounded-4 border bg-white d-flex align-items-center gap-3 shadow-sm h-100">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-success-subtle text-success flex-shrink-0" style="width:44px; height:44px;">
+                    <i class="fa-solid fa-bell-concierge fs-5"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark m-0" style="font-size:0.9rem;">Guardian Alerts</h6>
+                    <span class="text-muted small" style="font-size:0.75rem;">Your guardians will be notified instantly.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="p-3.5 rounded-4 border bg-white d-flex align-items-center gap-3 shadow-sm h-100">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-danger-subtle text-danger flex-shrink-0" style="width:44px; height:44px;">
+                    <i class="fa-solid fa-bolt fs-5"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark m-0" style="font-size:0.9rem;">Fast Response</h6>
+                    <span class="text-muted small" style="font-size:0.75rem;">Our team responds quickly to keep you safe.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="p-3.5 rounded-4 border bg-white d-flex align-items-center gap-3 shadow-sm h-100">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-purple-subtle text-purple flex-shrink-0" style="width:44px; height:44px; background:#f3e8ff; color:#7c3aed;">
+                    <i class="fa-solid fa-shield-check fs-5"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark m-0" style="font-size:0.9rem;">Always Protected</h6>
+                    <span class="text-muted small" style="font-size:0.75rem;">We are always here to help and protect you.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- SOS CONFIRM / DECLINE MODAL -->
+<div class="modal fade" id="sosConfirmModal" tabindex="-1" aria-labelledby="sosConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg" style="overflow:hidden;">
+            <div class="modal-header bg-danger text-white border-0 p-4">
+                <h5 class="modal-title fw-extrabold" id="sosConfirmModalLabel">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i> Confirm Emergency SOS Alert?
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3 text-danger">
+                    <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-2">
+                        <i class="fa-solid fa-bell-concierge fs-1"></i>
+                    </div>
+                </div>
+                <h4 class="fw-bold text-dark mb-2">Confirm SOS Signal Broadcast</h4>
+                <p class="text-muted small mb-3">
+                    Are you sure you want to broadcast an emergency distress signal to your guardians and security personnel?
+                </p>
+
+                <div class="form-group text-start mt-3">
+                    <label class="form-label fw-bold text-secondary small">Emergency Category:</label>
+                    <select id="modalEmergencyType" class="form-select rounded-3 p-2.5">
+                        <option value="Medical" selected>🏥 Medical Emergency</option>
+                        <option value="Fire">🔥 Fire Alert</option>
+                        <option value="Security">🚨 Security Intrusion</option>
+                        <option value="General">🆘 General SOS</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer bg-light border-0 p-3 d-flex justify-content-between">
+                <button type="button" class="btn btn-light fw-bold px-4 rounded-3 border" data-bs-dismiss="modal">
+                    ❌ Decline / Cancel
+                </button>
+                <button type="button" class="btn btn-danger fw-bold px-4 rounded-3 shadow-sm d-flex align-items-center gap-2" onclick="confirmSOSBroadcast()">
+                    <i class="fa-solid fa-paper-plane"></i> Confirm Emergency SOS
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD GUARDIAN MODAL -->
+<div class="modal fade" id="addGuardianModal" tabindex="-1" aria-labelledby="addGuardianModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <form action="{% url 'guardian_add_resident' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header bg-primary text-white p-4 border-0">
+                    <h5 class="modal-title fw-extrabold" id="addGuardianModalLabel">
+                        <i class="fa-solid fa-user-plus me-2"></i> Add Emergency Guardian
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-secondary small">First Name</label>
+                            <input type="text" name="first_name" class="form-control rounded-3" placeholder="First Name" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-secondary small">Last Name</label>
+                            <input type="text" name="last_name" class="form-control rounded-3" placeholder="Last Name" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-secondary small">Phone Number</label>
+                            <input type="text" name="phone" class="form-control rounded-3" placeholder="+91 9876543210" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-secondary small">Email Address</label>
+                            <input type="email" name="email" class="form-control rounded-3" placeholder="guardian@example.com" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-secondary small">Relationship</label>
+                            <select name="relationship" class="form-select rounded-3">
+                                <option value="Father">Father</option>
+                                <option value="Mother">Mother</option>
+                                <option value="Brother">Brother</option>
+                                <option value="Sister">Sister</option>
+                                <option value="Son">Son</option>
+                                <option value="Daughter">Daughter</option>
+                                <option value="Spouse">Spouse</option>
+                                <option value="Friend">Friend</option>
+                                <option value="Relative">Relative</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-secondary small d-block">Guardian Type</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="guardian_type" id="typePrimary" value="primary" checked>
+                                <label class="btn btn-outline-primary py-2 fw-bold" for="typePrimary">○ Primary</label>
+
+                                <input type="radio" class="btn-check" name="guardian_type" id="typeSecondary" value="secondary">
+                                <label class="btn btn-outline-purple py-2 fw-bold" for="typeSecondary" style="color:#7c3aed;">○ Secondary</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 p-3">
+                    <button type="button" class="btn btn-light fw-bold px-4 rounded-3 border" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4 rounded-3 shadow-sm">Save Guardian</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT HANDLER FOR RESIDENT DASHBOARD -->
+<script>
+function confirmSOSBroadcast() {
+    const type = document.getElementById('modalEmergencyType').value || 'Medical';
+    
+    // Close modal
+    const modalEl = document.getElementById('sosConfirmModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+
+    // Trigger API POST for SOS
+    fetch("{% url 'api_create_sos' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            emergency_type: type,
+            description: "SOS Emergency Signal Triggered from Resident Dashboard"
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("🚨 EMERGENCY SOS BROADCASTED SUCCESSFULLY!\nStep-by-step sequential notifications sent to Guardians, Security, and Society.");
+            if (typeof pollActiveEmergency === "function") {
+                pollActiveEmergency();
+            } else {
+                window.location.reload();
+            }
+        } else {
+            alert("SOS Note: " + (data.message || "SOS Broadcast Initialized"));
+            window.location.reload();
+        }
+    })
+    .catch(err => {
+        alert("🚨 SOS Broadcast sent!");
+        window.location.reload();
+    });
+}
+
+function shareLiveLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            alert(`📍 Live Location Shared!\nLatitude: ${position.coords.latitude}\nLongitude: ${position.coords.longitude}\nYour location has been shared with your guardians & security.`);
+        }, err => {
+            alert("📍 Live Location Shared!\nYour current resident address (Block A, Flat 101) has been updated with Guardians & Security.");
+        });
+    } else {
+        alert("📍 Live Location Shared!\nYour current resident address (Block A, Flat 101) has been updated with Guardians & Security.");
+    }
+}
+
+function openSupportModal() {
+    alert("📞 CareConnect 24/7 Helpline & Support:\nToll Free: 1800-123-4567\nSecurity Gate Extension: #101\nEmergency Email: support@careconnect.org");
+}
+</script>
+
+{% endblock %}

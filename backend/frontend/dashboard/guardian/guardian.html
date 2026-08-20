@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardian Dashboard | CareConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/dashboard-common.css">
+    <link rel="stylesheet" href="/css/resident-dashboard.css">
+    <style>
+        .guardian-hero-card { background: #ffffff; border-radius: 24px; padding: 28px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
+        .resident-card-item { background: #f8fafc; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+        .alert-card-item { background: #ffffff; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+        .badge-active { background: #fee2e2; color: #dc2626; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .badge-resolved { background: #dcfce7; color: #166534; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .badge-pending { background: #fef3c7; color: #92400e; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+        .btn-accept { background: #16a34a; color: #ffffff; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: transform 0.15s ease; }
+        .btn-accept:hover { transform: scale(1.03); background: #15803d; }
+        .btn-decline { background: #ffffff; color: #dc2626; border: 1px solid #fca5a5; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; }
+        .btn-decline:hover { background: #fee2e2; }
+        .btn-call-resident { background: #0284c7; color: #ffffff; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <img src="/images/careconnect-logo.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
+            <h2>CareConnect</h2>
+        </div>
+        <nav class="sidebar-navigation">
+            <a href="/dashboard/guardian/guardian.html" class="nav-item active"><i class="fa-solid fa-table-cells-large nav-icon"></i><span data-i18n="dashboard">Dashboard</span></a>
+            <a href="/dashboard/guardian/profile.html" class="nav-item"><i class="fa-regular fa-user nav-icon"></i><span data-i18n="nav_profile">Profile</span></a>
+            <a href="/dashboard/guardian/guardians.html" class="nav-item"><i class="fa-solid fa-user-shield nav-icon"></i><span data-i18n="nav_residents">My Residents</span></a>
+            <a href="/dashboard/guardian/emergency.html" class="nav-item nav-emergency"><i class="fa-solid fa-bell nav-icon text-red"></i><span data-i18n="emergency_alerts">Emergency Alerts</span></a>
+            <a href="javascript:void(0)" onclick="if(typeof openSettingsModal==='function') openSettingsModal();" class="nav-item"><i class="fa-solid fa-gear nav-icon"></i><span data-i18n="settings">Settings</span></a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button type="button" class="sidebar-toggle-btn" aria-label="Toggle Sidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="topbar-search-box">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                    <input type="text" id="topbarSearchInput" placeholder="Search assigned residents, alerts..." data-i18n-placeholder="search_placeholder">
+                </div>
+            </div>
+            <div class="topbar-right">
+                <!-- NOTIFICATION BELL -->
+                <button type="button" class="notification-btn" id="notifBtn" onclick="toggleGuardianNotificationPopover(event)" aria-label="Open notifications" style="position:relative; background:none; border:none; font-size:1.2rem; color:#64748b; margin-right:16px; cursor:pointer;">
+                    <i class="fa-regular fa-bell"></i>
+                    <span id="notifBadge" class="badge-pill" style="position:absolute; top:-4px; right:-6px; background:#ef4444; color:#fff; font-size:0.65rem; font-weight:800; padding:2px 6px; border-radius:10px; display:none;"></span>
+                </button>
+
+                <!-- SETTINGS GEAR -->
+                <button type="button" class="settings-gear-btn" onclick="if(typeof openSettingsModal==='function') openSettingsModal();" aria-label="Open settings" style="background:none; border:none; font-size:1.2rem; color:#64748b; margin-right:20px; cursor:pointer;">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+
+                <!-- USER AVATAR & INFO -->
+                <div class="topbar-user-pill" style="display:flex; align-items:center; gap:10px; margin-right:16px;">
+                    <img src="https://ui-avatars.com/api/?name=Guardian&background=0284c7&color=fff&bold=true" alt="Avatar" id="userAvatarImg" class="topbar-user-avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid #0284c7;">
+                    <div class="topbar-user-info" style="display:flex; flex-direction:column;">
+                        <strong id="topbarUserName" style="font-size:0.9rem; color:#0f172a;">Guardian</strong>
+                        <span id="topbarUserRole" style="font-size:0.75rem; color:#64748b;">Guardian</span>
+                    </div>
+                </div>
+                <button type="button" class="banner-btn btn-dark" onclick="handleLogout()" data-i18n="logout">Logout</button>
+            </div>
+        </header>
+
+        <div class="dashboard-main-content">
+            <!-- DYNAMIC LIVE EMERGENCY ALERT BANNER -->
+            <div id="liveSosStatusBanner" style="display:none; background:#fff5f5; border:2px solid #ef4444; border-radius:20px; padding:20px; margin-bottom:24px;"></div>
+
+            <!-- GUARDIAN WELCOME HERO BANNER -->
+            <div class="guardian-hero-card">
+                <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+                    <div>
+                        <h2 style="font-size:1.5rem; font-weight:800; color:#0f172a; margin:0;" id="welcomeHeaderTitle">Welcome back 👋</h2>
+                        <p style="font-size:0.875rem; color:#64748b; margin:4px 0 0;" data-i18n="welcome_sub">Primary & Secondary Emergency Contact Portal</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
+                <!-- MY ASSIGNED RESIDENTS CARD -->
+                <div style="background:#ffffff; border-radius:24px; padding:24px; border:1px solid #e2e8f0;">
+                    <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a; margin-bottom:16px;"><i class="fa-solid fa-user-shield text-muted me-2"></i><span data-i18n="nav_residents">My Assigned Residents</span></h3>
+                    <div id="myResidentsContainer">
+                        <div style="padding:20px; text-align:center; color:#94a3b8;">Loading residents...</div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC EMERGENCY NOTIFICATIONS PANEL -->
+                <div style="background:#ffffff; border-radius:24px; padding:24px; border:1px solid #e2e8f0;">
+                    <h3 style="font-size:1.2rem; font-weight:800; color:#0f172a; margin-bottom:16px;"><i class="fa-solid fa-bell text-muted me-2"></i><span data-i18n="emergency_alerts">Emergency Notifications</span></h3>
+                    <div id="emergencyNotificationsList">
+                        <div class="alert-card-item">
+                            <div>
+                                <span style="font-size:0.85rem; color:#64748b;" data-i18n="no_recent_alerts">No active emergency notifications right now.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script src="/js/i18n-translations.js"></script>
+<script src="/js/settings-manager.js"></script>
+<script src="/js/emergency-manager.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script src="/js/guardian-manager.js"></script>
+</body>
+
+</html>

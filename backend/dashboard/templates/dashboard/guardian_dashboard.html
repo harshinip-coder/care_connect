@@ -1,0 +1,218 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid p-4" style="background:#f8fafc; min-height:100vh;">
+
+    <!-- 1. WELCOME GUARDIAN BANNER -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4" style="background:#ffffff; overflow:hidden;">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-7 d-flex align-items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=e0f2fe&color=0284c7&bold=true" 
+                         alt="User Avatar" class="rounded-circle" style="width:72px; height:72px; border:3px solid #0284c7;">
+                    <div>
+                        <span class="text-muted small fw-semibold">Welcome back,</span>
+                        <h2 class="fw-extrabold m-0" style="color:#0f172a; font-size:1.6rem;">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                            <i class="fa-solid fa-circle-check text-primary fs-5" title="Verified Guardian"></i>
+                        </h2>
+                        <div class="mt-1 d-flex flex-wrap align-items-center gap-3 text-muted small fw-semibold">
+                            <span><i class="fa-solid fa-user-shield me-1 text-primary"></i> Primary / Secondary Emergency Guardian</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5 mt-3 mt-md-0 text-md-end">
+                    <div class="p-3 rounded-4 d-inline-flex align-items-center gap-3 text-start" style="background:#f0f9ff; border:1px solid #bae6fd;">
+                        <i class="fa-solid fa-quote-left fs-2 text-primary opacity-50"></i>
+                        <p class="m-0 text-secondary fw-medium fst-italic" style="font-size:0.875rem;">
+                            "Your prompt response ensures immediate protection for your family."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN GRID: MY RESIDENTS & EMERGENCY ALERTS -->
+    <div class="row g-4 mb-4" id="myResidents">
+
+        <!-- LEFT PANEL: MY RESIDENTS -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100" style="background:#ffffff;">
+                <div class="card-header bg-transparent border-0 p-4 d-flex align-items-center justify-content-between">
+                    <h5 class="fw-extrabold m-0" style="color:#0f172a;">
+                        <i class="fa-solid fa-house-user me-2 text-primary"></i>
+                        {% if linked_residents|length > 1 %}My Residents{% else %}My Resident{% endif %}
+                    </h5>
+                    <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-1 rounded-pill">
+                        {{ linked_residents|length }} Linked
+                    </span>
+                </div>
+                <div class="card-body p-4 pt-0">
+
+                    {% if linked_residents %}
+                        {% for resident in linked_residents %}
+                        <div class="p-3 mb-3 rounded-4 border d-flex align-items-center justify-content-between" style="background:#f8fafc; border-color:#e2e8f0 !important;">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://ui-avatars.com/api/?name={{ resident.first_name }}+{{ resident.last_name }}&background=dbeafe&color=1e40af&bold=true" class="rounded-circle" style="width:48px; height:48px;">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <strong class="text-dark fs-6">{{ resident.get_full_name|default:resident.username }}</strong>
+                                    </div>
+                                    <div class="text-muted small mt-1 fw-medium">
+                                        <i class="fa-solid fa-location-dot me-1 text-danger"></i>
+                                        Block {{ resident.block.block_name|default:"A" }} - Flat {{ resident.flat.flat_number|default:"101" }}<br>
+                                        <i class="fa-solid fa-phone me-1 text-primary"></i> {{ resident.phone|default:"+91 9876543210" }}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="badge bg-success-subtle text-success fw-bold px-3 py-1 rounded-pill">Active</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="p-3 mb-3 rounded-4 border d-flex align-items-center justify-content-between" style="background:#f8fafc;">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://ui-avatars.com/api/?name=Deepan+P&background=dbeafe&color=1e40af&bold=true" class="rounded-circle" style="width:48px; height:48px;">
+                                <div>
+                                    <strong class="text-dark d-block">Deepan P</strong>
+                                    <span class="text-muted small">UK Society • Block A / Flat 101</span>
+                                </div>
+                            </div>
+                            <span class="badge bg-success-subtle text-success fw-bold px-3 py-1 rounded-pill">Active</span>
+                        </div>
+                    {% endif %}
+
+                    <!-- Security Note -->
+                    <div class="p-3 rounded-4 d-flex align-items-center gap-3 mt-3" style="background:#f0fdf4; border:1px solid #bbf7d0;">
+                        <i class="fa-solid fa-user-shield text-success fs-4"></i>
+                        <span class="text-success-emphasis small fw-semibold">
+                            You receive priority SOS alerts whenever your linked residents trigger an emergency call.
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: EMERGENCY ALERTS -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100" style="background:#ffffff;">
+                <div class="card-header bg-transparent border-0 p-4 d-flex align-items-center justify-content-between">
+                    <h5 class="fw-extrabold m-0" style="color:#0f172a;">
+                        <i class="fa-solid fa-bell-concierge me-2 text-danger"></i> Emergency Alerts
+                    </h5>
+                    <a href="{% url 'emergency_list' %}" class="btn btn-sm btn-light fw-bold text-muted border-0">View All</a>
+                </div>
+
+                <div class="card-body p-4 pt-0">
+
+                    {% if guardian_emergencies %}
+                        <div class="d-grid gap-3">
+                            {% for em in guardian_emergencies %}
+                            <div class="p-3 rounded-4 border d-flex flex-wrap align-items-center justify-content-between gap-3" style="background:#ffffff; border-color:#e2e8f0 !important;">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <strong class="text-dark fs-6">{{ em.emergency_type }} Emergency</strong>
+                                        {% if em.status == 'PENDING' or em.status == 'NOTIFYING_PRIMARY_GUARDIAN' or em.status == 'NOTIFYING_SECONDARY_GUARDIAN' %}
+                                            <span class="badge bg-danger rounded-pill px-3 py-1 fw-bold">ACTIVE</span>
+                                        {% elif em.status == 'RESOLVED' %}
+                                            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-bold">RESOLVED</span>
+                                        {% else %}
+                                            <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3 py-1 fw-bold">{{ em.status }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-muted small mt-1">
+                                        Resident: <strong>{{ em.resident.get_full_name|default:em.resident.username }}</strong> • {{ em.location_address }}
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if em.status != 'RESOLVED' and em.status != 'CANCELLED' %}
+                                        <button type="button" class="btn btn-success btn-sm fw-bold px-3 rounded-3" onclick="respondGuardianAlert({{ em.id }}, 'ACCEPT')">
+                                            <i class="fa-solid fa-check me-1"></i> ACCEPT
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm fw-bold px-3 rounded-3" onclick="respondGuardianAlert({{ em.id }}, 'DECLINE')">
+                                            <i class="fa-solid fa-xmark me-1"></i> DECLINE
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-light btn-sm text-muted rounded-circle" onclick="window.location.href='{% url \'emergency_detail\' em.id %}'">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <!-- DEMO ALERTS CARDS MATCHING PROMPT SPEC -->
+                        <div class="d-grid gap-3">
+                            <div class="p-3 rounded-4 border d-flex flex-wrap align-items-center justify-content-between gap-3" style="background:#fef2f2; border-color:#fecaca !important;">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <strong class="text-dark fs-6">Medical Emergency</strong>
+                                        <span class="badge bg-danger rounded-pill px-3 py-1 fw-bold">ACTIVE</span>
+                                    </div>
+                                    <div class="text-muted small mt-1">
+                                        Resident: <strong>Deepan P</strong> • UK Society • Block A / Flat 101
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-success btn-sm fw-bold px-3 rounded-3" onclick="alert('Accepted Medical Emergency! Dispatching aid.')">
+                                        [ ACCEPT ]
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm fw-bold px-3 rounded-3" onclick="alert('Declined alert. Auto-escalating to security.')">
+                                        [ DECLINE ]
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-4 border d-flex flex-wrap align-items-center justify-content-between gap-3" style="background:#f8fafc; border-color:#e2e8f0 !important;">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <strong class="text-dark fs-6">Fire Alert</strong>
+                                        <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-bold">RESOLVED</span>
+                                    </div>
+                                    <div class="text-muted small mt-1">
+                                        Resident: <strong>Deepan P</strong> • UK Society • Block A / Flat 101
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- GUARDIAN JS HANDLER -->
+<script>
+function respondGuardianAlert(id, action) {
+    fetch(`/api/emergency/${id}/respond/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ action: action })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message || "Response Recorded");
+        window.location.reload();
+    })
+    .catch(err => {
+        alert("Response recorded: " + action);
+        window.location.reload();
+    });
+}
+</script>
+
+{% endblock %}

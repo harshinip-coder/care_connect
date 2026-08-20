@@ -1,0 +1,141 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-success text-white">
+            <h3>✏ Edit Profile</h3>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <label>First Name</label>
+                        {{ form.first_name }}
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label>Last Name</label>
+                        {{ form.last_name }}
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <label>Email</label>
+                        {{ form.email }}
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label>Phone</label>
+                        {{ form.phone }}
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label>Gender</label>
+                        {{ form.gender }}
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>Blood Group</label>
+                        {{ form.blood_group }}
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>Date of Birth</label>
+                        {{ form.dob }}
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <label>Address</label>
+
+                {{ form.address }}
+
+                <br><br>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label>Society</label>
+                        {{ form.society }}
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>Block</label>
+                        {{ form.block }}
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>Flat</label>
+                        {{ form.flat }}
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <label>Profile Picture</label>
+
+                {{ form.profile_photo }}
+
+                <br><br>
+
+                <button type="submit" class="btn btn-success">
+                    💾 Save Changes
+                </button>
+
+                <a href="{% url 'profile' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

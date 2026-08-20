@@ -1,0 +1,145 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}System Members - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="background:#f8fafc; min-height:100vh;">
+
+    <!-- HEADER & ACTIONS -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+        <div>
+            <h3 class="fw-extrabold text-dark m-0"><i class="fa-solid fa-users text-emerald-600 me-2"></i> System Members & User Database</h3>
+            <p class="text-muted small m-0 mt-1">Manage all registered Admins, Residents, Guardians, Security Personnel, Volunteers, and Society Members.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{% url 'member_add' %}" class="btn btn-emerald text-white fw-bold px-4 py-2.5 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" style="background:#059669; border:none;">
+                <i class="fa-solid fa-plus"></i> Add New Member
+            </a>
+        </div>
+    </div>
+
+    <!-- FILTER & SEARCH BAR -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4" style="background:#ffffff;">
+        <div class="card-body p-3">
+            <form action="{% url 'member_list' %}" method="GET" class="row g-2 align-items-center">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" name="q" class="form-control bg-light border-start-0 ps-0" placeholder="Search by name, username, email, phone, or ID..." value="{{ query }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="role" class="form-select bg-light" onchange="this.form.submit()">
+                        <option value="">All Roles</option>
+                        {% for role_code, role_label in role_choices %}
+                            <option value="{{ role_code }}" {% if role_code == role_filter %}selected{% endif %}>{{ role_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark fw-bold w-100 rounded-3"><i class="fa-solid fa-filter me-1"></i> Filter</button>
+                    {% if query or role_filter %}
+                        <a href="{% url 'member_list' %}" class="btn btn-light border fw-bold rounded-3"><i class="fa-solid fa-rotate-left"></i> Reset</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MEMBERS TABLE -->
+    <div class="card border-0 shadow-sm rounded-4" style="background:#ffffff;">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle m-0">
+                    <thead style="background:#f8fafc; font-size:0.8rem; text-transform:uppercase; color:#64748b;">
+                        <tr>
+                            <th class="ps-4">Member Name & ID</th>
+                            <th>Role</th>
+                            <th>Contact Info</th>
+                            <th>Residence / Area</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size:0.9rem;">
+                        {% for member in members %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if member.profile_photo %}
+                                            <img src="{{ member.profile_photo.url }}" class="rounded-circle" style="width:42px; height:42px; object-fit:cover;">
+                                        {% else %}
+                                            <img src="https://ui-avatars.com/api/?name={{ member.first_name }}+{{ member.last_name }}&background=10b981&color=fff&bold=true" class="rounded-circle" style="width:42px; height:42px;">
+                                        {% endif %}
+                                        <div>
+                                            <strong class="d-block text-dark">{{ member.get_full_name|default:member.username }}</strong>
+                                            <span class="text-muted small">@{{ member.username }} • ID: {{ member.employee_id|default:"-" }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if member.role == 'admin' %}
+                                        <span class="badge bg-danger-subtle text-danger fw-bold rounded-pill px-3 py-1">Administrator</span>
+                                    {% elif member.role == 'resident' %}
+                                        <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-3 py-1">Resident</span>
+                                    {% elif member.role == 'guardian' %}
+                                        <span class="badge bg-purple-subtle text-purple-700 fw-bold rounded-pill px-3 py-1" style="background:#f3e8ff; color:#6b21a8;">{{ member.guardian_type|default:"Guardian" }}</span>
+                                    {% elif member.role == 'security' %}
+                                        <span class="badge bg-warning-subtle text-warning-emphasis fw-bold rounded-pill px-3 py-1">Security Personnel</span>
+                                    {% elif member.role == 'volunteer' %}
+                                        <span class="badge bg-teal-subtle text-teal-700 fw-bold rounded-pill px-3 py-1" style="background:#ccfbf1; color:#0f766e;">Volunteer</span>
+                                    {% elif member.role == 'society_member' %}
+                                        <span class="badge bg-primary-subtle text-primary fw-bold rounded-pill px-3 py-1">Society Member</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary fw-bold rounded-pill px-3 py-1">{{ member.get_role_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <div class="text-dark"><i class="fa-regular fa-envelope me-1 text-muted"></i> {{ member.email }}</div>
+                                        <div class="text-muted"><i class="fa-solid fa-phone me-1 text-success"></i> {{ member.phone }}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        {% if member.society %}
+                                            <span class="fw-bold text-dark">{{ member.society.name }}</span>
+                                        {% else %}
+                                            <span class="fw-bold text-dark">UK Society</span>
+                                        {% endif %}
+                                        {% if member.block %}<span class="text-muted">• Block {{ member.block.block_name }}</span>{% endif %}
+                                        {% if member.flat %}<span class="text-muted">• Flat {{ member.flat.flat_number }}</span>{% endif %}
+                                        <div class="text-muted">{{ member.city|default:"Erode" }}, {{ member.state|default:"Tamil Nadu" }}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if member.is_active %}
+                                        <span class="badge bg-success-subtle text-success fw-bold px-2.5 py-1 rounded-pill">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary fw-bold px-2.5 py-1 rounded-pill">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4">
+                                    <form action="{% url 'member_delete' member.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to remove user {{ member.username }}?')">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 fw-bold"><i class="fa-solid fa-trash"></i> Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="fa-solid fa-users-slash fs-2 mb-2 d-block"></i>
+                                    No members found matching your search criteria.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
